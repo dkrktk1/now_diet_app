@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>야구 선수 맞춤 식단 플래너</title>
+    <script>
+      // Intercept attempts to overwrite window.fetch to prevent "Cannot set property fetch of #<Window> which has only a getter"
+      (function() {
+        try {
+          const originalFetch = window.fetch;
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return originalFetch; },
+            set: function(val) { console.warn('Intercepted attempt to overwrite window.fetch'); },
+            configurable: true
+          });
+        } catch (e) {
+          console.error('Failed to intercept window.fetch', e);
+        }
+      })();
+    </script>
+    
+    <!-- Add to home screen / PWA support -->
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3e%3crect width='512' height='512' fill='%23FFFFFF' /%3e%3crect width='512' height='512' fill='none' stroke='%23F0F0F0' stroke-width='2' /%3e%3cdefs%3e%3cclipPath id='cut'%3e%3crect x='0' y='0' width='512' height='308.5' /%3e%3c/clipPath%3e%3c/defs%3e%3cg fill='%23231F20'%3e%3ccircle cx='283' cy='212.5' r='9' /%3e%3cpolyline points='188.5,329.5 229,239.5 256,299.5 283,239.5 323.5,329.5' fill='none' stroke='%23231F20' stroke-width='18' stroke-linejoin='miter' stroke-miterlimit='10' clip-path='url(%23cut)' /%3e%3c/g%3e%3c/svg%3e" type="image/svg+xml" sizes="any" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3e%3crect width='512' height='512' fill='%23FFFFFF' /%3e%3crect width='512' height='512' fill='none' stroke='%23F0F0F0' stroke-width='2' /%3e%3cdefs%3e%3cclipPath id='cut'%3e%3crect x='0' y='0' width='512' height='308.5' /%3e%3c/clipPath%3e%3c/defs%3e%3cg fill='%23231F20'%3e%3ccircle cx='283' cy='212.5' r='9' /%3e%3cpolyline points='188.5,329.5 229,239.5 256,299.5 283,239.5 323.5,329.5' fill='none' stroke='%23231F20' stroke-width='18' stroke-linejoin='miter' stroke-miterlimit='10' clip-path='url(%23cut)' /%3e%3c/g%3e%3c/svg%3e" />
+    <link rel="manifest" href="/manifest.json?v=5" />
+    <meta name="theme-color" content="#111827" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Hide arrows from number inputs */
+      /* Chrome, Safari, Edge, Opera */
+      input[type=number]::-webkit-outer-spin-button,
+      input[type=number]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox */
+      input[type=number] {
+        -moz-appearance: textfield;
+      }
+    </style>
+
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gray-900 text-white">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

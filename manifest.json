@@ -1,0 +1,16 @@
+{
+  "name": "야구 선수 맞춤 식단 플래너",
+  "short_name": "식단 플래너",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512' viewBox='0 0 512 512'%3e%3crect width='512' height='512' fill='%23FFFFFF' /%3e%3crect width='512' height='512' fill='none' stroke='%23F0F0F0' stroke-width='2' /%3e%3cdefs%3e%3cclipPath id='cut'%3e%3crect x='0' y='0' width='512' height='308.5' /%3e%3c/clipPath%3e%3c/defs%3e%3cg fill='%23231F20'%3e%3ccircle cx='283' cy='212.5' r='9' /%3e%3cpolyline points='188.5,329.5 229,239.5 256,299.5 283,239.5 323.5,329.5' fill='none' stroke='%23231F20' stroke-width='18' stroke-linejoin='miter' stroke-miterlimit='10' clip-path='url(%23cut)' /%3e%3c/g%3e%3c/svg%3e",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
