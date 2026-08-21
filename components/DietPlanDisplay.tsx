@@ -676,18 +676,11 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
     const handleSelectFrequentFoods = (selectedItems: any[]) => {
         if (activeMealIndexForFrequentFoods === null) return;
         
-        const newMeals = [...userDiet.meals];
-        const currentMenu = newMeals[activeMealIndexForFrequentFoods].menu || [];
-        
-        // Add selected items to the active meal's menu
+        const currentMenu = userDiet.meals[activeMealIndexForFrequentFoods]?.menu || [];
         const updatedMenu = [...currentMenu, ...selectedItems];
-        newMeals[activeMealIndexForFrequentFoods] = {
-            ...newMeals[activeMealIndexForFrequentFoods],
-            menu: updatedMenu
-        };
         
-        const { totalCalories, totalMacros } = calculateTotals(newMeals);
-        setUserDiet({ ...userDiet, meals: newMeals, totalCalories, totalMacros });
+        handleUserMenuChange(activeMealIndexForFrequentFoods, updatedMenu);
+        
         setIsFrequentFoodsModalOpen(false);
         setActiveMealIndexForFrequentFoods(null);
         showNotification?.('자주 먹는 음식이 추가되었습니다.');
