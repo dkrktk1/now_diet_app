@@ -637,6 +637,12 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
     const [frequentFoods, setFrequentFoods] = useState<any[]>([]);
     const [isFrequentFoodsModalOpen, setIsFrequentFoodsModalOpen] = useState(false);
     const [activeMealIndexForFrequentFoods, setActiveMealIndexForFrequentFoods] = useState<number | null>(null);
+    const [selectedFrequentFoodIndices, setSelectedFrequentFoodIndices] = useState<Set<number>>(new Set());
+    const [frequentFoodToDelete, setFrequentFoodToDelete] = useState<{
+        type: 'single' | 'bulk';
+        indices: number[];
+        name?: string;
+    } | null>(null);
 
     useEffect(() => {
         if (targetUserId) {
@@ -670,6 +676,8 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
 
     const handleOpenFrequentFoodsList = (mealIndex: number) => {
         setActiveMealIndexForFrequentFoods(mealIndex);
+        setSelectedFrequentFoodIndices(new Set());
+        setFrequentFoodToDelete(null);
         setIsFrequentFoodsModalOpen(true);
     };
 
@@ -683,16 +691,79 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
         
         setIsFrequentFoodsModalOpen(false);
         setActiveMealIndexForFrequentFoods(null);
-        showNotification?.('자주 먹는 음식이 추가되었습니다.');
+        setSelectedFrequentFoodIndices(new Set());
+        showNotification?.(selectedItems.length === 1 
+            ? '자주 먹는 음식이 추가되었습니다.' 
+            : `${selectedItems.length}개의 자주 먹는 음식이 추가되었습니다.`);
     };
 
-    const handleDeleteFrequentFood = async (index: number) => {
-        if (!targetUserId) return;
-        const newFoods = [...frequentFoods];
-        newFoods.splice(index, 1);
+    const handleToggleSelectFrequentFood = (index: number) => {
+        setSelectedFrequentFoodIndices(prev => {
+            const next = new Set(prev);
+            if (next.has(index)) {
+                next.delete(index);
+            } else {
+                next.add(index);
+            }
+            return next;
+        });
+    };
+
+    const handleToggleSelectAllFrequentFoods = () => {
+        if (selectedFrequentFoodIndices.size === frequentFoods.length) {
+            setSelectedFrequentFoodIndices(new Set());
+        } else {
+            setSelectedFrequentFoodIndices(new Set(frequentFoods.map((_, i) => i)));
+        }
+    };
+
+    const handleAddSelectedFrequentFoods = () => {
+        if (selectedFrequentFoodIndices.size === 0) {
+            showNotification?.('식단에 추가할 음식을 선택해주세요.');
+            return;
+        }
+        const selectedItems = Array.from(selectedFrequentFoodIndices)
+            .sort((a, b) => a - b)
+            .map(i => frequentFoods[i])
+            .filter(Boolean);
+        
+        handleSelectFrequentFoods(selectedItems);
+    };
+
+    const handleRequestDeleteSingle = (index: number, name: string) => {
+        setFrequentFoodToDelete({
+            type: 'single',
+            indices: [index],
+            name
+        });
+    };
+
+    const handleRequestDeleteBulk = () => {
+        if (selectedFrequentFoodIndices.size === 0) {
+            showNotification?.('삭제할 음식을 선택해주세요.');
+            return;
+        }
+        setFrequentFoodToDelete({
+            type: 'bulk',
+            indices: Array.from(selectedFrequentFoodIndices)
+        });
+    };
+
+    const handleConfirmDeleteFrequentFoods = async () => {
+        if (!targetUserId || !frequentFoodToDelete) return;
+        
+        const indicesToDelete = new Set(frequentFoodToDelete.indices);
+        const newFoods = frequentFoods.filter((_, idx) => !indicesToDelete.has(idx));
+        const count = frequentFoodToDelete.indices.length;
+
         setFrequentFoods(newFoods);
         await saveFrequentFoods(targetUserId, newFoods);
-        showNotification?.('자주 먹는 음식 목록에서 삭제되었습니다.');
+        
+        setSelectedFrequentFoodIndices(new Set());
+        setFrequentFoodToDelete(null);
+        showNotification?.(count === 1
+            ? '자주 먹는 음식 목록에서 삭제되었습니다.'
+            : `${count}개의 자주 먹는 음식이 삭제되었습니다.`);
     };
 
     useEffect(() => {
@@ -1190,57 +1261,219 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
             
             {/* Frequent Foods Modal */}
             {isFrequentFoodsModalOpen && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-800 rounded-xl p-6 max-w-lg w-full border border-gray-700 shadow-2xl flex flex-col max-h-[80vh]">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-bold text-white">자주 먹는 음식</h3>
-                            <button onClick={() => setIsFrequentFoodsModalOpen(false)} className="text-gray-400 hover:text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-3 sm:p-4 backdrop-blur-xs">
+                    <div className="bg-gray-800 rounded-2xl p-4 sm:p-6 max-w-xl w-full border border-gray-700 shadow-2xl flex flex-col max-h-[85vh]">
+                        {/* Header */}
+                        <div className="flex justify-between items-center pb-3 mb-3 border-b border-gray-700">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xl">⭐</span>
+                                <h3 className="text-lg sm:text-xl font-bold text-white">자주 먹는 음식</h3>
+                                <span className="text-xs px-2 py-0.5 bg-blue-600/30 text-blue-300 border border-blue-500/40 rounded-full font-semibold">
+                                    총 {frequentFoods.length}개
+                                </span>
+                            </div>
+                            <button 
+                                onClick={() => setIsFrequentFoodsModalOpen(false)} 
+                                className="text-gray-400 hover:text-white p-1 rounded-lg hover:bg-gray-700 transition-colors"
+                                aria-label="닫기"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
                         
-                        <div className="overflow-y-auto flex-1 mb-4 pr-2">
+                        {/* Top Toolbar (Select all) */}
+                        {frequentFoods.length > 0 && (
+                            <div className="flex items-center justify-between px-1 pb-2.5 text-xs text-gray-300">
+                                <label className="flex items-center gap-2 cursor-pointer select-none">
+                                    <input 
+                                        type="checkbox"
+                                        checked={selectedFrequentFoodIndices.size === frequentFoods.length && frequentFoods.length > 0}
+                                        onChange={handleToggleSelectAllFrequentFoods}
+                                        className="w-4 h-4 rounded text-blue-600 bg-gray-700 border-gray-600 focus:ring-blue-500 cursor-pointer"
+                                    />
+                                    <span className="font-semibold text-gray-200">
+                                        {selectedFrequentFoodIndices.size === frequentFoods.length && frequentFoods.length > 0 
+                                            ? '전체 해제' 
+                                            : '전체 선택'}
+                                    </span>
+                                </label>
+                                <span className="text-gray-400">
+                                    {selectedFrequentFoodIndices.size > 0 && (
+                                        <span className="text-blue-400 font-medium">{selectedFrequentFoodIndices.size}개 선택됨</span>
+                                    )}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* List */}
+                        <div className="overflow-y-auto flex-1 mb-3 pr-1 space-y-2">
                             {frequentFoods.length === 0 ? (
-                                <p className="text-gray-400 text-center py-8">저장된 자주 먹는 음식이 없습니다.</p>
+                                <div className="text-center py-12 px-4 border-2 border-dashed border-gray-700 rounded-xl">
+                                    <span className="text-3xl block mb-2">🍽️</span>
+                                    <p className="text-gray-300 font-semibold mb-1">저장된 자주 먹는 음식이 없습니다.</p>
+                                    <p className="text-xs text-gray-500">식단에 음식을 입력한 후 &apos;자주 먹는 음식에 등록&apos; 버튼으로 저장할 수 있습니다.</p>
+                                </div>
                             ) : (
-                                <div className="space-y-2">
-                                    {frequentFoods.map((food, idx) => (
-                                        <div key={idx} className="bg-gray-700 p-3 rounded-lg flex justify-between items-center">
-                                            <div>
-                                                <div className="font-bold text-white">{food.foodName}</div>
-                                                <div className="text-xs text-gray-300 flex gap-2 mt-1">
-                                                    <span>칼로리: {food.calories || 0}</span>
-                                                    <span>탄: {food.carbs || 0}</span>
-                                                    <span>단: {food.protein || 0}</span>
-                                                    <span>지: {food.fat || 0}</span>
+                                frequentFoods.map((food, idx) => {
+                                    const isSelected = selectedFrequentFoodIndices.has(idx);
+                                    return (
+                                        <div 
+                                            key={idx} 
+                                            onClick={() => handleToggleSelectFrequentFood(idx)}
+                                            className={`p-3 rounded-xl border transition-all flex items-center justify-between gap-3 cursor-pointer ${
+                                                isSelected 
+                                                    ? 'bg-blue-950/40 border-blue-500 shadow-sm' 
+                                                    : 'bg-gray-700/80 hover:bg-gray-700 border-gray-600/60'
+                                            }`}
+                                        >
+                                            {/* Checkbox & Food info */}
+                                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                                                <input 
+                                                    type="checkbox"
+                                                    checked={isSelected}
+                                                    onChange={() => {}} // Handled by container click
+                                                    className="w-4 h-4 rounded text-blue-600 bg-gray-800 border-gray-500 focus:ring-blue-500 cursor-pointer shrink-0"
+                                                />
+                                                <div className="min-w-0 flex-1">
+                                                    <div className="font-bold text-white text-sm sm:text-base truncate">
+                                                        {food.foodName}
+                                                    </div>
+                                                    <div className="text-xs text-gray-300 flex flex-wrap gap-x-2.5 gap-y-0.5 mt-1">
+                                                        <span className="text-orange-400 font-semibold">{food.calories || 0}kcal</span>
+                                                        <span className="text-gray-500">|</span>
+                                                        <span>탄 <strong className="text-yellow-400 font-normal">{food.carbs || 0}g</strong></span>
+                                                        <span>단 <strong className="text-green-400 font-normal">{food.protein || 0}g</strong></span>
+                                                        <span>지 <strong className="text-red-400 font-normal">{food.fat || 0}g</strong></span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div className="flex gap-2 shrink-0">
+
+                                            {/* Individual Action Buttons */}
+                                            <div 
+                                                className="flex items-center gap-1.5 shrink-0"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
                                                 <button 
+                                                    type="button"
                                                     onClick={() => handleSelectFrequentFoods([food])}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-md transition-colors"
+                                                    className="bg-blue-600 hover:bg-blue-500 text-white text-xs px-2.5 py-1.5 rounded-lg font-semibold transition-transform active:scale-95 shadow-sm"
+                                                    title="이 음식만 식단에 바로 추가"
                                                 >
                                                     추가
                                                 </button>
                                                 <button 
-                                                    onClick={() => handleDeleteFrequentFood(idx)}
-                                                    className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-md transition-colors"
+                                                    type="button"
+                                                    onClick={() => handleRequestDeleteSingle(idx, food.foodName)}
+                                                    className="bg-gray-800 hover:bg-red-600 hover:text-white text-gray-300 border border-gray-600 hover:border-red-600 text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                                                    title="자주 먹는 음식 목록에서 삭제"
                                                 >
                                                     삭제
                                                 </button>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                    );
+                                })
                             )}
                         </div>
                         
-                        <div className="flex justify-end pt-2 border-t border-gray-700">
+                        {/* Modal Footer / Bulk Actions */}
+                        <div className="pt-3 border-t border-gray-700 flex flex-wrap items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    type="button"
+                                    onClick={handleRequestDeleteBulk}
+                                    disabled={selectedFrequentFoodIndices.size === 0}
+                                    className={`px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 border ${
+                                        selectedFrequentFoodIndices.size > 0
+                                            ? 'bg-red-900/30 hover:bg-red-800/50 border-red-700 text-red-300 hover:text-white cursor-pointer active:scale-95'
+                                            : 'bg-gray-800 border-gray-700 text-gray-500 cursor-not-allowed opacity-60'
+                                    }`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    선택 삭제 {selectedFrequentFoodIndices.size > 0 && `(${selectedFrequentFoodIndices.size})`}
+                                </button>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    type="button"
+                                    onClick={() => setIsFrequentFoodsModalOpen(false)}
+                                    className="px-3.5 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-xl transition-colors text-xs sm:text-sm font-medium"
+                                >
+                                    닫기
+                                </button>
+                                <button 
+                                    type="button"
+                                    onClick={handleAddSelectedFrequentFoods}
+                                    disabled={selectedFrequentFoodIndices.size === 0}
+                                    className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all flex items-center gap-1.5 shadow-md ${
+                                        selectedFrequentFoodIndices.size > 0
+                                            ? 'bg-blue-600 hover:bg-blue-500 text-white cursor-pointer active:scale-95'
+                                            : 'bg-gray-700 text-gray-400 cursor-not-allowed opacity-60'
+                                    }`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    선택 추가 {selectedFrequentFoodIndices.size > 0 ? `(${selectedFrequentFoodIndices.size}개)` : ''}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Frequent Food Delete Confirmation Warning Modal */}
+            {frequentFoodToDelete && (
+                <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[70] p-4 backdrop-blur-xs animate-fadeIn">
+                    <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full border border-gray-700 shadow-2xl">
+                        <div className="flex items-center gap-3 text-red-400 mb-3">
+                            <div className="p-2.5 bg-red-950/60 border border-red-800/80 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">자주 먹는 음식 삭제</h3>
+                                <p className="text-xs text-gray-400">삭제 확인</p>
+                            </div>
+                        </div>
+                        
+                        <div className="bg-gray-900/60 p-3.5 rounded-xl border border-gray-700/80 mb-5">
+                            {frequentFoodToDelete.type === 'single' ? (
+                                <p className="text-gray-200 text-sm">
+                                    <strong className="text-white font-semibold">[{frequentFoodToDelete.name}]</strong>을(를)<br/>
+                                    자주 먹는 음식 목록에서 정말 삭제하시겠습니까?
+                                </p>
+                            ) : (
+                                <p className="text-gray-200 text-sm">
+                                    선택한 <strong className="text-red-400 font-semibold">{frequentFoodToDelete.indices.length}개</strong>의 음식을<br/>
+                                    자주 먹는 음식 목록에서 정말 삭제하시겠습니까?
+                                </p>
+                            )}
+                            <p className="text-2xs text-gray-400 mt-2">
+                                ※ 삭제된 항목은 목록에서 완전히 제거됩니다.
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end gap-2.5">
                             <button 
-                                onClick={() => setIsFrequentFoodsModalOpen(false)}
-                                className="px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white rounded-lg transition-colors text-sm"
+                                type="button"
+                                onClick={() => setFrequentFoodToDelete(null)}
+                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-xl text-sm font-medium transition-colors"
                             >
-                                닫기
+                                취소
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={handleConfirmDeleteFrequentFoods}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition-all shadow-md active:scale-95"
+                            >
+                                삭제하기
                             </button>
                         </div>
                     </div>
