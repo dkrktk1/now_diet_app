@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { DailyDiet, Meal } from '../types';
+import { getWeeksForMonth } from '../utils';
 
 export type ExportMode = 'calendar' | 'week' | 'month' | 'year';
 
@@ -73,37 +74,15 @@ export const DataExportModal: React.FC<DataExportModalProps> = ({
         return Boolean(uHas || aHas);
     };
 
-    // Calculate weeks for the selected weekYear/weekMonth
+    // Calculate weeks for the selected weekYear/weekMonth (월요일 ~ 일요일 기준)
     const weeksList = useMemo(() => {
-        const totalDays = getDaysInMonth(weekYear, weekMonth);
-        const weeks: { index: number; label: string; startDate: string; endDate: string; dates: string[] }[] = [];
-        
-        let startDay = 1;
-        let weekNum = 1;
-        
-        while (startDay <= totalDays) {
-            const endDay = Math.min(startDay + 6, totalDays);
-            const dates: string[] = [];
-            for (let d = startDay; d <= endDay; d++) {
-                dates.push(formatDateStr(weekYear, weekMonth, d));
-            }
-            
-            const startStr = formatDateStr(weekYear, weekMonth, startDay);
-            const endStr = formatDateStr(weekYear, weekMonth, endDay);
-            
-            weeks.push({
-                index: weekNum - 1,
-                label: `${weekNum}주차 (${weekMonth}/${startDay} ~ ${weekMonth}/${endDay})`,
-                startDate: startStr,
-                endDate: endStr,
-                dates
-            });
-
-            startDay = endDay + 1;
-            weekNum++;
-        }
-
-        return weeks;
+        return getWeeksForMonth(weekYear, weekMonth).map((w, idx) => ({
+            index: idx,
+            label: w.label,
+            startDate: w.startDate,
+            endDate: w.endDate,
+            dates: w.dates
+        }));
     }, [weekYear, weekMonth]);
 
     // Calendar grid computation

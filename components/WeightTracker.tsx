@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { formatNumber, parseDateString, formatDate } from '../utils';
+import { formatNumber, parseDateString, formatDate, getWeeksForMonth, MonthWeekInfo } from '../utils';
 import { DailyDiet } from '../types';
 
 interface WeightEntry {
@@ -301,23 +301,54 @@ const WeightTracker: React.FC<WeightTrackerProps> = ({ history, startWeight, sta
             calories: userDiets[date].totalCalories || 0
         }));
 
-        const getWeekIdentifier = (dateStr: string) => {
-            const dt = new Date(dateStr);
-            if (isNaN(dt.getTime())) return '';
-            
-            const firstDayOfMonth = new Date(dt.getFullYear(), dt.getMonth(), 1);
-            const firstDayWeekday = firstDayOfMonth.getDay() === 0 ? 6 : firstDayOfMonth.getDay() - 1; // 0 for Monday
-            const offsetDate = dt.getDate() + firstDayWeekday - 1;
-            const week = Math.floor(offsetDate / 7) + 1;
-            
-            return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-W${week}`;
-        };
+        // 주차 옵션 맵 및 사용 가능한 필터 옵션들 생성 (월요일 ~ 일요일 기준)
+        const weekOptionsMap: Record<string, MonthWeekInfo> = {};
+        const availableMonths = new Set<string>();
 
+        // 데이터가 속한 월 및 인접한 주차의 월들을 수집
+        allChartData.forEach(d => {
+            const dt = new Date(d.date);
+            if (!isNaN(dt.getTime())) {
+                const day = dt.getDay();
+                const diffToMon = (day + 6) % 7;
+                const mon = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() - diffToMon);
+                const sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6);
+                
+                const monYearMonth = `${mon.getFullYear()}-${String(mon.getMonth() + 1).padStart(2, '0')}`;
+                const sunYearMonth = `${sun.getFullYear()}-${String(sun.getMonth() + 1).padStart(2, '0')}`;
+                const currentYearMonth = d.date.substring(0, 7);
+
+                availableMonths.add(currentYearMonth);
+                availableMonths.add(monYearMonth);
+                availableMonths.add(sunYearMonth);
+            }
+        });
+
+        // 각 월의 주차 목록을 계산하여 weekOptionsMap에 등록
+        availableMonths.forEach(ym => {
+            const [yStr, mStr] = ym.split('-');
+            const y = parseInt(yStr, 10);
+            const m = parseInt(mStr, 10);
+            if (!isNaN(y) && !isNaN(m)) {
+                const weeks = getWeeksForMonth(y, m);
+                weeks.forEach(w => {
+                    weekOptionsMap[w.id] = w;
+                });
+            }
+        });
+
+        // 실제 데이터가 있는 월과 주차만 필터 옵션으로 추출
         const availableFilterOptions = new Set<string>();
         allChartData.forEach(d => {
             availableFilterOptions.add(d.date.substring(0, 7)); // Add month
-            const weekId = getWeekIdentifier(d.date);
-            if (weekId) availableFilterOptions.add(weekId); // Add week
+        });
+
+        Object.values(weekOptionsMap).forEach(w => {
+            // 해당 주차 범위(startDate ~ endDate)에 데이터가 최소 1건 이상 있는지 확인
+            const hasDataInWeek = allChartData.some(d => d.date >= w.startDate && d.date <= w.endDate);
+            if (hasDataInWeek) {
+                availableFilterOptions.add(w.id);
+            }
         });
         
         // Sorting strategy: month first, then its weeks in descending order, overall descending
@@ -338,7 +369,11 @@ const WeightTracker: React.FC<WeightTrackerProps> = ({ history, startWeight, sta
             ? allChartData 
             : allChartData.filter(d => {
                 if (calorieGraphMonth.includes('-W')) {
-                    return getWeekIdentifier(d.date) === calorieGraphMonth;
+                    const weekInfo = weekOptionsMap[calorieGraphMonth];
+                    if (weekInfo) {
+                        return d.date >= weekInfo.startDate && d.date <= weekInfo.endDate;
+                    }
+                    return false;
                 }
                 return d.date.startsWith(calorieGraphMonth);
             });
@@ -349,8 +384,15 @@ const WeightTracker: React.FC<WeightTrackerProps> = ({ history, startWeight, sta
                 {sortedFilterOptions.map(option => {
                     let label = option;
                     if (option.includes('-W')) {
-                        const [y, m, w] = option.split('-');
-                        label = `   ${y}년 ${m}월 ${w.replace('W', '')}주차`;
+                        const weekInfo = weekOptionsMap[option];
+                        if (weekInfo) {
+                            const [sY, sM, sD] = weekInfo.startDate.split('-');
+                            const [eY, eM, eD] = weekInfo.endDate.split('-');
+                            label = `   ${weekInfo.year}년 ${String(weekInfo.month).padStart(2, '0')}월 ${weekInfo.weekNumber}주차 (${parseInt(sM, 10)}/${parseInt(sD, 10)} ~ ${parseInt(eM, 10)}/${parseInt(eD, 10)})`;
+                        } else {
+                            const [y, m, w] = option.split('-');
+                            label = `   ${y}년 ${m}월 ${w.replace('W', '')}주차`;
+                        }
                     } else {
                         label = option.replace('-', '년 ') + '월';
                     }
@@ -526,6 +568,12 @@ const WeightTracker: React.FC<WeightTrackerProps> = ({ history, startWeight, sta
                         <p className="text-sm text-blue-400 mt-1 font-medium">
                             {calorieGraphMonth === 'all' ? '전체보기' : (() => {
                                 if (calorieGraphMonth.includes('-W')) {
+                                    const weekInfo = weekOptionsMap[calorieGraphMonth];
+                                    if (weekInfo) {
+                                        const [sY, sM, sD] = weekInfo.startDate.split('-');
+                                        const [eY, eM, eD] = weekInfo.endDate.split('-');
+                                        return `${weekInfo.month}월 ${weekInfo.weekNumber}주차 (${parseInt(sM, 10)}/${parseInt(sD, 10)} ~ ${parseInt(eM, 10)}/${parseInt(eD, 10)})`;
+                                    }
                                     const [, m, w] = calorieGraphMonth.split('-');
                                     return `${parseInt(m, 10)}월 ${w.replace('W', '')}주차`;
                                 }
