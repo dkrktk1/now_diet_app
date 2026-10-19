@@ -121,7 +121,7 @@ export const DataExportModal: React.FC<DataExportModalProps> = ({
         let dates: string[] = [];
         
         if (mode === 'calendar') {
-            dates = Array.from(selectedDates).sort();
+            dates = (Array.from(selectedDates) as string[]).sort();
         } else if (mode === 'week') {
             const currentWeek = weeksList[selectedWeekIndex] || weeksList[0];
             dates = currentWeek ? currentWeek.dates : [];

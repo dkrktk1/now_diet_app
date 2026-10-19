@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DailyDiet, Meal, WeightEntry } from '../types';
 import { formatNumber } from '../utils';
-import { loadFrequentFoods, saveFrequentFoods } from '../services/firebaseService';
+import { loadFrequentFoods, saveFrequentFoods, saveSingleUserDiet } from '../services/firebaseService';
 import DataExportModal from './DataExportModal';
 
 interface DietPlanDisplayProps {
@@ -15,6 +15,7 @@ interface DietPlanDisplayProps {
   onDeleteBodyComposition?: (date: Date) => void;
   showSaveButton?: boolean;
   onSave?: () => void;
+  onSaveUserDiet?: (diet: DailyDiet) => Promise<void> | void;
   showNotification?: (message: string) => void;
   userRole?: 'admin' | 'player' | null;
   targetUserId?: string | null;
@@ -619,7 +620,7 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
 const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({ 
     adminDiet, userDiet, allAdminDiets = {}, allUserDiets = {}, setAdminDiet, setUserDiet, 
     onAddBodyComposition, onDeleteBodyComposition, 
-    showSaveButton, onSave, showNotification, userRole, 
+    showSaveButton, onSave, onSaveUserDiet, showNotification, userRole, 
     targetUserId, playerName, weightForDate, selectedDate, 
     announcement = '', setAnnouncement, 
     autoApplyRecentDiet, setAutoApplyRecentDiet 
@@ -722,7 +723,7 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
             showNotification?.('식단에 추가할 음식을 선택해주세요.');
             return;
         }
-        const selectedItems = Array.from(selectedFrequentFoodIndices)
+        const selectedItems = (Array.from(selectedFrequentFoodIndices) as number[])
             .sort((a, b) => a - b)
             .map(i => frequentFoods[i])
             .filter(Boolean);
@@ -858,7 +859,7 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
         setUserDiet({ ...userDiet, meals: newMeals, totalCalories, totalMacros });
     };
 
-    const handleClearUserMeal = (index: number) => {
+    const handleClearUserMeal = async (index: number) => {
         const newMeals = [...userDiet.meals];
         newMeals[index] = {
             ...newMeals[index],
@@ -868,7 +869,8 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
             menu: []
         };
         const { totalCalories, totalMacros } = calculateTotals(newMeals);
-        setUserDiet({ ...userDiet, meals: newMeals, totalCalories, totalMacros });
+        const updatedDiet = { ...userDiet, meals: newMeals, totalCalories, totalMacros };
+        setUserDiet(updatedDiet);
 
         const mealNameMap: Record<string, string> = {
             '아침': '식사1',
@@ -877,7 +879,21 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
         };
         const displayName = mealNameMap[newMeals[index].name] || newMeals[index].name;
 
-        showNotification?.(`${displayName} 섭취 내역이 삭제되었습니다.`);
+        try {
+            if (onSaveUserDiet) {
+                await onSaveUserDiet(updatedDiet);
+            } else if (targetUserId && selectedDate) {
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
+                await saveSingleUserDiet(targetUserId, dateKey, updatedDiet);
+            }
+            showNotification?.(`${displayName} 섭취 내역이 삭제되었습니다.`);
+        } catch (error) {
+            console.error("Failed to persist cleared meal intake:", error);
+            showNotification?.(`${displayName} 섭취 내역 삭제 중 오류가 발생했습니다.`);
+        }
     };
 
     const handleUserMacroChange = (index: number, macro: 'protein' | 'carbs' | 'fat', value: string) => {
@@ -1211,9 +1227,23 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                         onClearUserMeal={handleClearUserMeal}
                         onAddFrequentFoods={handleAddFrequentFoods}
                         onOpenFrequentFoodsList={() => handleOpenFrequentFoodsList(index)}
-                        onSaveMeal={(mealName, currentDiet) => {
+                        onSaveMeal={async (mealName, currentDiet) => {
                             setUserDiet(currentDiet);
-                            showNotification?.(`${mealName} 섭취량이 저장되었습니다.`);
+                            try {
+                                if (onSaveUserDiet) {
+                                    await onSaveUserDiet(currentDiet);
+                                } else if (targetUserId && selectedDate) {
+                                    const year = selectedDate.getFullYear();
+                                    const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                                    const day = String(selectedDate.getDate()).padStart(2, '0');
+                                    const dateKey = `${year}-${month}-${day}`;
+                                    await saveSingleUserDiet(targetUserId, dateKey, currentDiet);
+                                }
+                                showNotification?.(`${mealName} 섭취량이 저장되었습니다.`);
+                            } catch (error) {
+                                console.error("Failed to save meal intake:", error);
+                                showNotification?.(`${mealName} 섭취량 저장 중 오류가 발생했습니다.`);
+                            }
                         }}
                     />
                 ))}

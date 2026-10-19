@@ -17,6 +17,7 @@ import {
     saveDietGoal, loadDietGoal,
     saveAdminDiets, loadAdminDiets,
     saveUserDiets, loadUserDiets,
+    saveSingleAdminDiet, saveSingleUserDiet,
     saveWeightHistory, loadWeightHistory,
     loadAllUsers,
     saveUserPassword, loadUserPassword,
@@ -190,17 +191,7 @@ const App: React.FC = () => {
         }
     }, [profile, goal, isLoading, userId, userRole, selectedPlayerId, allPlayers]);
 
-    useEffect(() => {
-        if (isLoading || !userId || userRole !== 'admin' || !selectedPlayerId) return;
-        saveAdminDiets(selectedPlayerId, adminDiets);
-    }, [adminDiets, isLoading, userId, userRole, selectedPlayerId]);
 
-    useEffect(() => {
-        if (isLoading || !userId) return;
-        const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
-        if (!idToSaveFor) return;
-        saveUserDiets(idToSaveFor, userDiets);
-    }, [userDiets, isLoading, userId, userRole, selectedPlayerId]);
     
     useEffect(() => {
         if (isLoading || !userId) return;
@@ -390,6 +381,35 @@ const App: React.FC = () => {
     const dateStringForWeight = formatDateDots(selectedDate);
     const weightForDate = weightHistory.find(entry => entry.date === dateStringForWeight) || null;
 
+    const handleSaveAdminDiet = async () => {
+        const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
+        if (!idToSaveFor) return;
+        const dateKey = formatDate(selectedDate);
+        setAdminDiets(prev => ({ ...prev, [dateKey]: currentAdminDiet }));
+        try {
+            await saveSingleAdminDiet(idToSaveFor, dateKey, currentAdminDiet);
+            showNotification("저장이 완료되었습니다.");
+        } catch (error) {
+            console.error("Failed to save admin diet:", error);
+            showNotification("식단 저장 중 오류가 발생했습니다.");
+        }
+    };
+
+    const handleSaveUserDiet = async (dietToSave?: DailyDiet) => {
+        const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
+        if (!idToSaveFor) return;
+        const dateKey = formatDate(selectedDate);
+        const diet = dietToSave || currentUserDiet;
+        setUserDiets(prev => ({ ...prev, [dateKey]: diet }));
+        try {
+            await saveSingleUserDiet(idToSaveFor, dateKey, diet);
+        } catch (error) {
+            console.error("Failed to save user diet:", error);
+            showNotification("섭취 내용 저장 중 오류가 발생했습니다.");
+            throw error;
+        }
+    };
+
     const renderContent = () => {
         if (userRole === 'admin' && !selectedPlayerId && activeTab !== 'playerRoster') {
             return (
@@ -439,11 +459,8 @@ const App: React.FC = () => {
                             selectedDate={selectedDate}
                             weightForDate={weightForDate}
                             showSaveButton={userRole === 'admin'}
-                            onSave={() => {
-                                setAdminDiets(prev => ({ ...prev, [formatDate(selectedDate)]: currentAdminDiet }));
-                                setUserDiets(prev => ({ ...prev, [formatDate(selectedDate)]: currentUserDiet }));
-                                showNotification("저장이 완료되었습니다.");
-                            }}
+                            onSave={handleSaveAdminDiet}
+                            onSaveUserDiet={handleSaveUserDiet}
                             showNotification={showNotification}
                             userRole={userRole}
                             targetUserId={userRole === 'admin' ? selectedPlayerId : userId}

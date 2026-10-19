@@ -12,6 +12,7 @@ const initialSignUpProfile: PlayerProfile = {
   dateOfBirth: '',
   height: '',
   weight: '',
+  muscleMass: '',
   bodyFatPercentage: '',
   position: '', // Default to empty to show placeholder
   allergies: '',

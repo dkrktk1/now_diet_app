@@ -95,12 +95,20 @@ export const loadGlobalAnnouncement = (): Promise<string | null> => {
 // --- Diets (User and Admin) ---
 // FIX: Switched to v8 database syntax.
 export const saveUserDiets = async (userId: string, diets: { [key: string]: DailyDiet }) => {
-    await db.ref(`users/${userId}/userDiets`).set(diets);
+    await db.ref(`users/${userId}/userDiets`).update(diets);
 };
 
 // FIX: Switched to v8 database syntax.
 export const saveAdminDiets = async (userId: string, diets: { [key: string]: DailyDiet }) => {
-    await db.ref(`users/${userId}/adminDiets`).set(diets);
+    await db.ref(`users/${userId}/adminDiets`).update(diets);
+};
+
+export const saveSingleUserDiet = async (userId: string, dateKey: string, diet: DailyDiet) => {
+    await db.ref(`users/${userId}/userDiets/${dateKey}`).set(diet);
+};
+
+export const saveSingleAdminDiet = async (userId: string, dateKey: string, diet: DailyDiet) => {
+    await db.ref(`users/${userId}/adminDiets/${dateKey}`).set(diet);
 };
 
 export const loadUserDiets = (userId: string): Promise<{ [key: string]: DailyDiet } | null> => {
