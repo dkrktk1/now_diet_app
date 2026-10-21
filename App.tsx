@@ -381,13 +381,14 @@ const App: React.FC = () => {
     const dateStringForWeight = formatDateDots(selectedDate);
     const weightForDate = weightHistory.find(entry => entry.date === dateStringForWeight) || null;
 
-    const handleSaveAdminDiet = async () => {
+    const handleSaveAdminDiet = async (dietToSave?: DailyDiet) => {
         const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
         if (!idToSaveFor) return;
         const dateKey = formatDate(selectedDate);
-        setAdminDiets(prev => ({ ...prev, [dateKey]: currentAdminDiet }));
+        const diet = dietToSave || currentAdminDiet;
+        setAdminDiets(prev => ({ ...prev, [dateKey]: diet }));
         try {
-            await saveSingleAdminDiet(idToSaveFor, dateKey, currentAdminDiet);
+            await saveSingleAdminDiet(idToSaveFor, dateKey, diet);
             showNotification("저장이 완료되었습니다.");
         } catch (error) {
             console.error("Failed to save admin diet:", error);

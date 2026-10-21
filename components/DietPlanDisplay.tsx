@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DailyDiet, Meal, WeightEntry } from '../types';
 import { formatNumber } from '../utils';
-import { loadFrequentFoods, saveFrequentFoods, saveSingleUserDiet } from '../services/firebaseService';
+import { loadFrequentFoods, saveFrequentFoods, saveSingleUserDiet, saveSingleAdminDiet } from '../services/firebaseService';
 import DataExportModal from './DataExportModal';
 
 interface DietPlanDisplayProps {
@@ -14,7 +14,7 @@ interface DietPlanDisplayProps {
   onAddBodyComposition?: (weight: number, muscleMass: number, bodyFat: number, date: Date) => void;
   onDeleteBodyComposition?: (date: Date) => void;
   showSaveButton?: boolean;
-  onSave?: () => void;
+  onSave?: (diet?: DailyDiet) => Promise<void> | void;
   onSaveUserDiet?: (diet: DailyDiet) => Promise<void> | void;
   showNotification?: (message: string) => void;
   userRole?: 'admin' | 'player' | null;
@@ -271,41 +271,98 @@ const MenuTable = ({
     );
 };
 
-const MealMacroSummary = ({ current, target, isSummary = false }: { current: any, target: any, isSummary?: boolean }) => {
+interface MealMacroSummaryProps {
+    current: any;
+    target: any;
+    isSummary?: boolean;
+    isEditing?: boolean;
+    editCalories?: string;
+    editCarbs?: string;
+    editProtein?: string;
+    editFat?: string;
+    onCaloriesChange?: (val: string) => void;
+    onCarbsChange?: (val: string) => void;
+    onProteinChange?: (val: string) => void;
+    onFatChange?: (val: string) => void;
+    headerAction?: React.ReactNode;
+}
+
+const MealMacroSummary: React.FC<MealMacroSummaryProps> = ({ 
+    current, 
+    target, 
+    isSummary = false,
+    isEditing = false,
+    editCalories,
+    editCarbs,
+    editProtein,
+    editFat,
+    onCaloriesChange,
+    onCarbsChange,
+    onProteinChange,
+    onFatChange,
+    headerAction
+}) => {
     const currentCalories = current.calories || 0;
-    const targetCalories = target.calories || 0;
+    const targetCalories = isEditing ? (Number(editCalories) || 0) : (target.calories || 0);
     const remainingCalories = targetCalories - currentCalories;
     const isOverCalories = remainingCalories < 0;
     const caloriesPercent = targetCalories > 0 ? Math.min((currentCalories / targetCalories) * 100, 100) : 0;
     const caloriesRawPercent = targetCalories > 0 ? formatNumber((currentCalories / targetCalories) * 100) : 0;
 
     const currentCarbs = current.macros?.carbs || 0;
-    const targetCarbs = target.macros?.carbs || 0;
+    const targetCarbs = isEditing ? (Number(editCarbs) || 0) : (target.macros?.carbs || 0);
     const carbsPercent = targetCarbs > 0 ? Math.min((currentCarbs / targetCarbs) * 100, 100) : 0;
     const carbsRawPercent = targetCarbs > 0 ? formatNumber((currentCarbs / targetCarbs) * 100) : 0;
 
     const currentProtein = current.macros?.protein || 0;
-    const targetProtein = target.macros?.protein || 0;
+    const targetProtein = isEditing ? (Number(editProtein) || 0) : (target.macros?.protein || 0);
     const proteinPercent = targetProtein > 0 ? Math.min((currentProtein / targetProtein) * 100, 100) : 0;
     const proteinRawPercent = targetProtein > 0 ? formatNumber((currentProtein / targetProtein) * 100) : 0;
 
     const currentFat = current.macros?.fat || 0;
-    const targetFat = target.macros?.fat || 0;
+    const targetFat = isEditing ? (Number(editFat) || 0) : (target.macros?.fat || 0);
     const fatPercent = targetFat > 0 ? Math.min((currentFat / targetFat) * 100, 100) : 0;
     const fatRawPercent = targetFat > 0 ? formatNumber((currentFat / targetFat) * 100) : 0;
 
     return (
-        <div className="bg-[#2a2a2a] p-5 rounded-2xl mb-6 text-white shadow-md border border-gray-700/50">
-            {/* Calories Header */}
-            <div className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 ${isSummary ? 'mb-2' : 'mb-6'} text-sm sm:text-lg font-bold text-center`}>
-                <div className="flex items-center gap-2">
+        <div className="bg-[#2a2a2a] p-5 rounded-2xl mb-6 text-white shadow-md border border-gray-700/50 relative">
+            {/* Calories Header with Right-Side Action (수정 / 저장 버튼) */}
+            <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 ${isSummary ? 'mb-2' : 'mb-6'}`}>
+                {/* Spacer on left for desktop centering */}
+                <div className="hidden sm:block w-24 shrink-0"></div>
+
+                {/* Center: Calories Info */}
+                <div className="flex flex-wrap items-center justify-center gap-2 text-sm sm:text-lg font-bold text-center">
                     <span className="text-orange-500 text-xl">🔥</span>
                     <span>
-                        {isSummary ? '총 섭취 ' : '섭취 '}{formatNumber(currentCalories)} / {isSummary ? '총 권장 ' : '권장 '}{formatNumber(targetCalories)}kcal
-                        {targetCalories > 0 && (
-                            <span className="text-gray-400 ml-2 text-sm sm:text-base">({caloriesRawPercent}%)</span>
-                        )}
+                        {isSummary ? '총 섭취 ' : '섭취 '}{formatNumber(currentCalories)} / 
                     </span>
+                    {isEditing ? (
+                        <div className="inline-flex items-center gap-1.5 bg-gray-900 border-2 border-blue-500 rounded-lg px-2.5 py-0.5 shadow-inner">
+                            <span className="text-blue-400 text-xs sm:text-sm font-semibold">총 권장:</span>
+                            <input
+                                type="number"
+                                value={editCalories ?? ''}
+                                onChange={(e) => onCaloriesChange?.(e.target.value)}
+                                placeholder="0"
+                                className="w-20 sm:w-24 bg-transparent text-center font-black text-white text-base sm:text-lg focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                autoFocus
+                            />
+                            <span className="text-gray-400 text-xs sm:text-sm">kcal</span>
+                        </div>
+                    ) : (
+                        <span>
+                            {isSummary ? '총 권장 ' : '권장 '}{formatNumber(targetCalories)}kcal
+                        </span>
+                    )}
+                    {targetCalories > 0 && (
+                        <span className="text-gray-400 ml-1 text-sm sm:text-base">({caloriesRawPercent}%)</span>
+                    )}
+                </div>
+
+                {/* Right: Header Action (수정 / 저장 버튼 등) */}
+                <div className="w-full sm:w-auto flex justify-center sm:justify-end shrink-0">
+                    {headerAction}
                 </div>
             </div>
 
@@ -345,9 +402,28 @@ const MealMacroSummary = ({ current, target, isSummary = false }: { current: any
                     <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-3 overflow-hidden">
                         <div className="bg-yellow-400 h-full rounded-full transition-all duration-500" style={{ width: `${carbsPercent}%` }}></div>
                     </div>
-                    <span className="text-xs sm:text-sm font-bold text-gray-100">
-                        {formatNumber(currentCarbs)} / {formatNumber(targetCarbs)}g <span className="text-gray-400 font-normal ml-1">({carbsRawPercent}%)</span>
-                    </span>
+                    {isEditing ? (
+                        <div className="flex flex-col items-center gap-1">
+                            <span className="text-xs sm:text-sm font-bold text-gray-300">
+                                섭취 {formatNumber(currentCarbs)}g
+                            </span>
+                            <div className="flex items-center gap-1 bg-gray-900 border border-yellow-400/80 rounded-md px-1.5 py-0.5 shadow-inner">
+                                <span className="text-[10px] sm:text-xs text-yellow-300 font-semibold">권장:</span>
+                                <input
+                                    type="number"
+                                    value={editCarbs ?? ''}
+                                    onChange={(e) => onCarbsChange?.(e.target.value)}
+                                    placeholder="0"
+                                    className="w-12 sm:w-16 bg-transparent text-center font-bold text-white text-xs sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <span className="text-[10px] sm:text-xs text-gray-400">g</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <span className="text-xs sm:text-sm font-bold text-gray-100">
+                            {formatNumber(currentCarbs)} / {formatNumber(targetCarbs)}g <span className="text-gray-400 font-normal ml-1">({carbsRawPercent}%)</span>
+                        </span>
+                    )}
                 </div>
                 {/* Protein */}
                 <div className="flex flex-col items-center">
@@ -355,9 +431,28 @@ const MealMacroSummary = ({ current, target, isSummary = false }: { current: any
                     <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-3 overflow-hidden">
                         <div className="bg-green-500 h-full rounded-full transition-all duration-500" style={{ width: `${proteinPercent}%` }}></div>
                     </div>
-                    <span className="text-xs sm:text-sm font-bold text-gray-100">
-                        {formatNumber(currentProtein)} / {formatNumber(targetProtein)}g <span className="text-gray-400 font-normal ml-1">({proteinRawPercent}%)</span>
-                    </span>
+                    {isEditing ? (
+                        <div className="flex flex-col items-center gap-1">
+                            <span className="text-xs sm:text-sm font-bold text-gray-300">
+                                섭취 {formatNumber(currentProtein)}g
+                            </span>
+                            <div className="flex items-center gap-1 bg-gray-900 border border-green-400/80 rounded-md px-1.5 py-0.5 shadow-inner">
+                                <span className="text-[10px] sm:text-xs text-green-300 font-semibold">권장:</span>
+                                <input
+                                    type="number"
+                                    value={editProtein ?? ''}
+                                    onChange={(e) => onProteinChange?.(e.target.value)}
+                                    placeholder="0"
+                                    className="w-12 sm:w-16 bg-transparent text-center font-bold text-white text-xs sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <span className="text-[10px] sm:text-xs text-gray-400">g</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <span className="text-xs sm:text-sm font-bold text-gray-100">
+                            {formatNumber(currentProtein)} / {formatNumber(targetProtein)}g <span className="text-gray-400 font-normal ml-1">({proteinRawPercent}%)</span>
+                        </span>
+                    )}
                 </div>
                 {/* Fat */}
                 <div className="flex flex-col items-center">
@@ -365,11 +460,46 @@ const MealMacroSummary = ({ current, target, isSummary = false }: { current: any
                     <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-3 overflow-hidden">
                         <div className="bg-red-500 h-full rounded-full transition-all duration-500" style={{ width: `${fatPercent}%` }}></div>
                     </div>
-                    <span className="text-xs sm:text-sm font-bold text-gray-100">
-                        {formatNumber(currentFat)} / {formatNumber(targetFat)}g <span className="text-gray-400 font-normal ml-1">({fatRawPercent}%)</span>
-                    </span>
+                    {isEditing ? (
+                        <div className="flex flex-col items-center gap-1">
+                            <span className="text-xs sm:text-sm font-bold text-gray-300">
+                                섭취 {formatNumber(currentFat)}g
+                            </span>
+                            <div className="flex items-center gap-1 bg-gray-900 border border-red-400/80 rounded-md px-1.5 py-0.5 shadow-inner">
+                                <span className="text-[10px] sm:text-xs text-red-300 font-semibold">권장:</span>
+                                <input
+                                    type="number"
+                                    value={editFat ?? ''}
+                                    onChange={(e) => onFatChange?.(e.target.value)}
+                                    placeholder="0"
+                                    className="w-12 sm:w-16 bg-transparent text-center font-bold text-white text-xs sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <span className="text-[10px] sm:text-xs text-gray-400">g</span>
+                            </div>
+                        </div>
+                    ) : (
+                        <span className="text-xs sm:text-sm font-bold text-gray-100">
+                            {formatNumber(currentFat)} / {formatNumber(targetFat)}g <span className="text-gray-400 font-normal ml-1">({fatRawPercent}%)</span>
+                        </span>
+                    )}
                 </div>
             </div>
+
+            {/* Split Preview Banner when editing */}
+            {isEditing && (
+                <div className="mt-5 p-3 bg-blue-900/30 border border-blue-700/60 rounded-xl text-center">
+                    <p className="text-xs sm:text-sm text-blue-200 font-medium flex flex-wrap items-center justify-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>식사 1, 2, 3 권장량(각 1/3 균등 배분):</span>
+                        <span className="text-white font-bold ml-1">칼로리 {formatNumber(Math.round(((Number(editCalories) || 0) / 3) * 10) / 10)}kcal</span> | 
+                        <span className="text-yellow-300 font-bold ml-1">탄수화물 {formatNumber(Math.round(((Number(editCarbs) || 0) / 3) * 10) / 10)}g</span> | 
+                        <span className="text-green-300 font-bold ml-1">단백질 {formatNumber(Math.round(((Number(editProtein) || 0) / 3) * 10) / 10)}g</span> | 
+                        <span className="text-red-300 font-bold ml-1">지방 {formatNumber(Math.round(((Number(editFat) || 0) / 3) * 10) / 10)}g</span>
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
@@ -634,6 +764,107 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
     const [tempAnnouncement, setTempAnnouncement] = useState<string>(announcement);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
     const [isExportModalOpen, setIsExportModalOpen] = useState<boolean>(false);
+    
+    // Total Recommended Nutrition Editing State
+    const [isEditingTargets, setIsEditingTargets] = useState<boolean>(false);
+    const [showSaveTargetConfirm, setShowSaveTargetConfirm] = useState<boolean>(false);
+    const [targetCaloriesInput, setTargetCaloriesInput] = useState<string>('');
+    const [targetCarbsInput, setTargetCarbsInput] = useState<string>('');
+    const [targetProteinInput, setTargetProteinInput] = useState<string>('');
+    const [targetFatInput, setTargetFatInput] = useState<string>('');
+
+    useEffect(() => {
+        if (!isEditingTargets) {
+            setTargetCaloriesInput(adminDiet?.totalCalories ? String(adminDiet.totalCalories) : '');
+            setTargetCarbsInput(adminDiet?.totalMacros?.carbs ? String(adminDiet.totalMacros.carbs) : '');
+            setTargetProteinInput(adminDiet?.totalMacros?.protein ? String(adminDiet.totalMacros.protein) : '');
+            setTargetFatInput(adminDiet?.totalMacros?.fat ? String(adminDiet.totalMacros.fat) : '');
+        }
+    }, [adminDiet, isEditingTargets]);
+
+    const handleStartEditTargets = () => {
+        setTargetCaloriesInput(adminDiet?.totalCalories ? String(adminDiet.totalCalories) : '');
+        setTargetCarbsInput(adminDiet?.totalMacros?.carbs ? String(adminDiet.totalMacros.carbs) : '');
+        setTargetProteinInput(adminDiet?.totalMacros?.protein ? String(adminDiet.totalMacros.protein) : '');
+        setTargetFatInput(adminDiet?.totalMacros?.fat ? String(adminDiet.totalMacros.fat) : '');
+        setIsEditingTargets(true);
+    };
+
+    const handleCancelEditTargets = () => {
+        setTargetCaloriesInput(adminDiet?.totalCalories ? String(adminDiet.totalCalories) : '');
+        setTargetCarbsInput(adminDiet?.totalMacros?.carbs ? String(adminDiet.totalMacros.carbs) : '');
+        setTargetProteinInput(adminDiet?.totalMacros?.protein ? String(adminDiet.totalMacros.protein) : '');
+        setTargetFatInput(adminDiet?.totalMacros?.fat ? String(adminDiet.totalMacros.fat) : '');
+        setIsEditingTargets(false);
+    };
+
+    const handleRequestSaveTargets = () => {
+        setShowSaveTargetConfirm(true);
+    };
+
+    const handleConfirmSaveTargets = async () => {
+        setShowSaveTargetConfirm(false);
+        setIsEditingTargets(false);
+
+        const cal = Number(targetCaloriesInput) || 0;
+        const carbs = Number(targetCarbsInput) || 0;
+        const protein = Number(targetProteinInput) || 0;
+        const fat = Number(targetFatInput) || 0;
+
+        const mealCalories = Math.round((cal / 3) * 10) / 10;
+        const mealCarbs = Math.round((carbs / 3) * 10) / 10;
+        const mealProtein = Math.round((protein / 3) * 10) / 10;
+        const mealFat = Math.round((fat / 3) * 10) / 10;
+
+        const defaultMealNames = ['식사1', '식사2', '식사3'];
+        const currentMeals = adminDiet?.meals && adminDiet.meals.length >= 3 
+            ? adminDiet.meals 
+            : [
+                { name: '식사1', time: '', menu: [], calories: 0, macros: { protein: 0, carbs: 0, fat: 0 } },
+                { name: '식사2', time: '', menu: [], calories: 0, macros: { protein: 0, carbs: 0, fat: 0 } },
+                { name: '식사3', time: '', menu: [], calories: 0, macros: { protein: 0, carbs: 0, fat: 0 } },
+            ];
+
+        const updatedMeals: Meal[] = currentMeals.map((meal, idx) => ({
+            ...meal,
+            name: meal.name || defaultMealNames[idx] || `식사${idx + 1}`,
+            calories: mealCalories,
+            macros: {
+                protein: mealProtein,
+                carbs: mealCarbs,
+                fat: mealFat
+            }
+        }));
+
+        const updatedAdminDiet: DailyDiet = {
+            ...adminDiet,
+            totalCalories: cal,
+            totalMacros: {
+                protein,
+                carbs,
+                fat
+            },
+            meals: updatedMeals
+        };
+
+        setAdminDiet(updatedAdminDiet);
+
+        try {
+            if (onSave) {
+                await onSave(updatedAdminDiet);
+            } else if (targetUserId && selectedDate) {
+                const year = selectedDate.getFullYear();
+                const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+                const day = String(selectedDate.getDate()).padStart(2, '0');
+                const dateKey = `${year}-${month}-${day}`;
+                await saveSingleAdminDiet(targetUserId, dateKey, updatedAdminDiet);
+                showNotification?.("총 권장량이 저장되었습니다.");
+            }
+        } catch (error) {
+            console.error("Failed to save admin diet targets:", error);
+            showNotification?.("권장량 저장 중 오류가 발생했습니다.");
+        }
+    };
     
     const [frequentFoods, setFrequentFoods] = useState<any[]>([]);
     const [isFrequentFoodsModalOpen, setIsFrequentFoodsModalOpen] = useState(false);
@@ -1094,12 +1325,14 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
         <div className="space-y-6">
             <div className="bg-gray-800 p-5 sm:p-6 rounded-xl shadow-lg border border-gray-700">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                        오늘 식단 요약
-                    </h3>
+                    <div className="flex flex-wrap items-center gap-3">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            오늘 식단 요약
+                        </h3>
+                    </div>
                     
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 self-end sm:self-auto">
                         <div className="flex flex-col gap-2">
@@ -1204,6 +1437,50 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                     current={{ calories: userDiet.totalCalories, macros: userDiet.totalMacros }} 
                     target={{ calories: adminDiet.totalCalories, macros: adminDiet.totalMacros }} 
                     isSummary={true}
+                    isEditing={isEditingTargets}
+                    editCalories={targetCaloriesInput}
+                    editCarbs={targetCarbsInput}
+                    editProtein={targetProteinInput}
+                    editFat={targetFatInput}
+                    onCaloriesChange={setTargetCaloriesInput}
+                    onCarbsChange={setTargetCarbsInput}
+                    onProteinChange={setTargetProteinInput}
+                    onFatChange={setTargetFatInput}
+                    headerAction={
+                        !isEditingTargets ? (
+                            <button
+                                type="button"
+                                onClick={handleStartEditTargets}
+                                className="bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                                title="총 권장 칼로리, 탄수화물, 단백질, 지방 수정"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                                수정
+                            </button>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handleCancelEditTargets}
+                                    className="bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                                >
+                                    취소
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleRequestSaveTargets}
+                                    className="bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm font-bold px-3.5 py-1.5 rounded-lg shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    저장
+                                </button>
+                            </div>
+                        )
+                    }
                 />
             </div>
 
@@ -1504,6 +1781,72 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                                 className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-xl text-sm font-bold transition-all shadow-md active:scale-95"
                             >
                                 삭제하기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Save Targets Confirmation Alert Modal */}
+            {showSaveTargetConfirm && (
+                <div className="fixed inset-0 bg-black/75 flex items-center justify-center z-[70] p-4 backdrop-blur-xs animate-fadeIn">
+                    <div className="bg-gray-800 rounded-2xl p-6 max-w-sm w-full border border-gray-700 shadow-2xl">
+                        <div className="flex items-center gap-3 text-blue-400 mb-3">
+                            <div className="p-2.5 bg-blue-950/60 border border-blue-800/80 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-white">총 권장량 저장</h3>
+                                <p className="text-xs text-gray-400">저장 확인</p>
+                            </div>
+                        </div>
+                        
+                        <div className="bg-gray-900/60 p-4 rounded-xl border border-gray-700/80 mb-5 space-y-3">
+                            <p className="text-gray-200 text-sm font-medium">
+                                총 권장 영양 정보를 저장하시겠습니까?
+                            </p>
+                            <div className="bg-gray-800/80 rounded-lg p-2.5 text-xs text-gray-300 space-y-1.5 border border-gray-700/50">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-400">총 권장 칼로리:</span>
+                                    <span className="font-bold text-white">{formatNumber(Number(targetCaloriesInput) || 0)} kcal</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-400">총 탄수화물:</span>
+                                    <span className="font-bold text-yellow-400">{formatNumber(Number(targetCarbsInput) || 0)} g</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-400">총 단백질:</span>
+                                    <span className="font-bold text-green-400">{formatNumber(Number(targetProteinInput) || 0)} g</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-400">총 지방:</span>
+                                    <span className="font-bold text-red-400">{formatNumber(Number(targetFatInput) || 0)} g</span>
+                                </div>
+                            </div>
+                            <p className="text-2xs text-blue-300 font-medium">
+                                ※ 식사 1, 2, 3의 권장량은 총 권장량을 3등분하여 각각 균등하게 자동 반영됩니다.
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end gap-2.5">
+                            <button 
+                                type="button"
+                                onClick={() => setShowSaveTargetConfirm(false)}
+                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+                            >
+                                취소
+                            </button>
+                            <button 
+                                type="button"
+                                onClick={handleConfirmSaveTargets}
+                                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all shadow-md active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                </svg>
+                                저장하기
                             </button>
                         </div>
                     </div>
