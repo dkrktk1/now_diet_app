@@ -167,23 +167,23 @@ const MenuTable = ({
     };
 
     return (
-        <div className={`flex-1 p-4 rounded-lg border ${disabled ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-800 border-green-900/50 shadow-inner'}`}>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 gap-2">
-                <label className={`font-medium ${titleColor} block text-sm`}>{title}</label>
-                <div className="flex flex-wrap items-center gap-2">
+        <div className={`flex-1 p-2.5 sm:p-4 rounded-lg border ${disabled ? 'bg-gray-900/50 border-gray-700' : 'bg-gray-800 border-green-900/50 shadow-inner'}`}>
+            <div className="flex flex-wrap justify-between items-center mb-1.5 sm:mb-2 gap-1.5">
+                <label className={`font-medium ${titleColor} block text-xs sm:text-sm whitespace-nowrap`}>{title}</label>
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                     {!disabled && showFrequentFoodFeatures && (
                         <>
                             <button 
                                 onClick={handleAddFrequentFoods}
                                 disabled={checkedIndices.length === 0}
-                                className={`text-xs px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 ${checkedIndices.length > 0 ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}
+                                className={`text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-colors flex items-center gap-1 whitespace-nowrap ${checkedIndices.length > 0 ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-gray-700 text-gray-500 cursor-not-allowed'}`}
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                                 자주 먹는 음식 추가
                             </button>
                             <button 
                                 onClick={onOpenFrequentFoodsList}
-                                className="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 shrink-0"
+                                className="bg-purple-600 hover:bg-purple-700 text-white text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-colors flex items-center gap-1 shrink-0 whitespace-nowrap"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
                                 자주 먹는 음식 불러오기
@@ -193,7 +193,7 @@ const MenuTable = ({
                     {!disabled && onOpenSearch && (
                         <button 
                             onClick={onOpenSearch}
-                            className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded-md transition-colors flex items-center gap-1 shrink-0"
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-md transition-colors flex items-center gap-1 shrink-0 whitespace-nowrap"
                         >
                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                             음식 검색
@@ -202,22 +202,22 @@ const MenuTable = ({
                 </div>
             </div>
             <div className="overflow-x-auto">
-                <table className="w-full text-sm text-left text-gray-300 min-w-[400px]">
-                    <thead className="text-xs text-gray-400 bg-gray-800 uppercase">
+                <table className="w-full text-xs sm:text-sm text-left text-gray-300 min-w-[340px] sm:min-w-[400px]">
+                    <thead className="text-[11px] sm:text-xs text-gray-400 bg-gray-800 uppercase">
                         <tr>
-                            {!disabled && showFrequentFoodFeatures && <th className="px-2 py-2 w-8 text-center">선택</th>}
-                            <th className="px-2 py-2">음식종류</th>
-                            <th className="px-2 py-2 w-16 text-center">칼로리</th>
-                            <th className="px-2 py-2 w-16 text-center">탄수화물</th>
-                            <th className="px-2 py-2 w-16 text-center">단백질</th>
-                            <th className="px-2 py-2 w-16 text-center">지방</th>
-                            {!disabled && <th className="px-2 py-2 w-8"></th>}
+                            {!disabled && showFrequentFoodFeatures && <th className="px-1.5 py-1.5 sm:py-2 w-7 sm:w-8 text-center whitespace-nowrap">선택</th>}
+                            <th className="px-1.5 py-1.5 sm:py-2 whitespace-nowrap">음식종류</th>
+                            <th className="px-1.5 py-1.5 sm:py-2 w-14 sm:w-16 text-center whitespace-nowrap">칼로리</th>
+                            <th className="px-1.5 py-1.5 sm:py-2 w-14 sm:w-16 text-center whitespace-nowrap">탄수화물</th>
+                            <th className="px-1.5 py-1.5 sm:py-2 w-14 sm:w-16 text-center whitespace-nowrap">단백질</th>
+                            <th className="px-1.5 py-1.5 sm:py-2 w-14 sm:w-16 text-center whitespace-nowrap">지방</th>
+                            {!disabled && <th className="px-1.5 py-1.5 sm:py-2 w-7 sm:w-8"></th>}
                         </tr>
                     </thead>
                     <tbody>
                         {normalizedItems.length === 0 && disabled && (
                             <tr>
-                                <td colSpan={showFrequentFoodFeatures && !disabled ? 7 : 6} className="px-2 py-4 text-center text-gray-500 italic">
+                                <td colSpan={showFrequentFoodFeatures && !disabled ? 7 : 6} className="px-2 py-3 text-center text-gray-500 italic text-xs sm:text-sm">
                                     {placeholder || "입력된 식단이 없습니다."}
                                 </td>
                             </tr>
@@ -225,34 +225,34 @@ const MenuTable = ({
                         {normalizedItems.map((item, idx) => (
                             <tr key={idx} className="border-b border-gray-700">
                                 {!disabled && showFrequentFoodFeatures && (
-                                    <td className="px-2 py-1 text-center">
+                                    <td className="px-1.5 py-0.5 sm:py-1 text-center">
                                         <input 
                                             type="checkbox" 
                                             checked={checkedIndices.includes(idx)}
                                             onChange={() => toggleCheck(idx)}
-                                            className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
+                                            className="w-3.5 h-3.5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 focus:ring-2"
                                         />
                                     </td>
                                 )}
-                                <td className="px-1 py-1">
-                                    <input type="text" value={item.foodName || ''} onChange={e => handleChange(idx, 'foodName', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-1 ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="음식명" />
+                                <td className="px-1 py-0.5 sm:py-1">
+                                    <input type="text" value={item.foodName || ''} onChange={e => handleChange(idx, 'foodName', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-0.5 sm:py-1 text-xs sm:text-sm ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="음식명" />
                                 </td>
-                                <td className="px-1 py-1">
-                                    <input type="number" value={item.calories || ''} onChange={e => handleChange(idx, 'calories', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
+                                <td className="px-1 py-0.5 sm:py-1">
+                                    <input type="number" value={item.calories || ''} onChange={e => handleChange(idx, 'calories', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-0.5 sm:py-1 text-center text-xs sm:text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
                                 </td>
-                                <td className="px-1 py-1">
-                                    <input type="number" value={item.carbs || ''} onChange={e => handleChange(idx, 'carbs', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
+                                <td className="px-1 py-0.5 sm:py-1">
+                                    <input type="number" value={item.carbs || ''} onChange={e => handleChange(idx, 'carbs', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-0.5 sm:py-1 text-center text-xs sm:text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
                                 </td>
-                                <td className="px-1 py-1">
-                                    <input type="number" value={item.protein || ''} onChange={e => handleChange(idx, 'protein', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
+                                <td className="px-1 py-0.5 sm:py-1">
+                                    <input type="number" value={item.protein || ''} onChange={e => handleChange(idx, 'protein', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-0.5 sm:py-1 text-center text-xs sm:text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
                                 </td>
-                                <td className="px-1 py-1">
-                                    <input type="number" value={item.fat || ''} onChange={e => handleChange(idx, 'fat', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-1 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
+                                <td className="px-1 py-0.5 sm:py-1">
+                                    <input type="number" value={item.fat || ''} onChange={e => handleChange(idx, 'fat', e.target.value)} disabled={disabled} className={`w-full bg-transparent border-b border-gray-600 px-1 py-0.5 sm:py-1 text-center text-xs sm:text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${disabled ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-700'}`} placeholder="0" />
                                 </td>
                                 {!disabled && (
-                                    <td className="px-1 py-1 text-center">
-                                        <button type="button" onClick={() => handleRemoveRow(idx)} className="text-red-400 hover:text-red-300 p-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                    <td className="px-1 py-0.5 sm:py-1 text-center">
+                                        <button type="button" onClick={() => handleRemoveRow(idx)} className="text-red-400 hover:text-red-300 p-0.5 sm:p-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                                         </button>
                                     </td>
                                 )}
@@ -262,8 +262,8 @@ const MenuTable = ({
                 </table>
             </div>
             {!disabled && (
-                <button type="button" onClick={handleAddRow} className="mt-3 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                <button type="button" onClick={handleAddRow} className="mt-2 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 font-medium whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                     음식 추가
                 </button>
             )}
@@ -325,67 +325,69 @@ const MealMacroSummary: React.FC<MealMacroSummaryProps> = ({
     const fatRawPercent = targetFat > 0 ? formatNumber((currentFat / targetFat) * 100) : 0;
 
     return (
-        <div className="bg-[#2a2a2a] p-5 rounded-2xl mb-6 text-white shadow-md border border-gray-700/50 relative">
+        <div className={`bg-[#2a2a2a] ${isSummary ? 'p-3 sm:p-5 mb-2.5 sm:mb-5' : 'p-2.5 sm:p-4 mb-0'} rounded-xl sm:rounded-2xl text-white shadow-md border border-gray-700/50 relative`}>
             {/* Calories Header with Right-Side Action (수정 / 저장 버튼) */}
-            <div className={`flex flex-col sm:flex-row items-center justify-between gap-3 ${isSummary ? 'mb-2' : 'mb-6'}`}>
-                {/* Spacer on left for desktop centering */}
-                <div className="hidden sm:block w-24 shrink-0"></div>
+            <div className={`flex items-center justify-between gap-1.5 sm:gap-3 ${isSummary ? 'mb-1.5 sm:mb-2' : 'mb-2 sm:mb-3'}`}>
+                {/* Spacer on left for desktop centering when headerAction exists */}
+                <div className={`${headerAction ? 'hidden sm:block sm:w-20 lg:w-24' : 'hidden'} shrink-0`}></div>
 
-                {/* Center: Calories Info */}
-                <div className="flex flex-wrap items-center justify-center gap-2 text-sm sm:text-lg font-bold text-center">
-                    <span className="text-orange-500 text-xl">🔥</span>
-                    <span>
+                {/* Center: Calories Info (1 single line on mobile) */}
+                <div className="flex-1 flex items-center justify-center gap-1 sm:gap-2 text-xs min-[380px]:text-sm sm:text-lg font-bold text-center whitespace-nowrap overflow-hidden">
+                    <span className="text-orange-500 text-sm sm:text-xl shrink-0">🔥</span>
+                    <span className="truncate">
                         {isSummary ? '총 섭취 ' : '섭취 '}{formatNumber(currentCalories)} / 
                     </span>
                     {isEditing ? (
-                        <div className="inline-flex items-center gap-1.5 bg-gray-900 border-2 border-blue-500 rounded-lg px-2.5 py-0.5 shadow-inner">
-                            <span className="text-blue-400 text-xs sm:text-sm font-semibold">총 권장:</span>
+                        <div className="inline-flex items-center gap-1 bg-gray-900 border border-blue-500 rounded-md px-1.5 py-0.5 shadow-inner shrink-0">
+                            <span className="text-blue-400 text-[10px] sm:text-sm font-semibold">총 권장:</span>
                             <input
                                 type="number"
                                 value={editCalories ?? ''}
                                 onChange={(e) => onCaloriesChange?.(e.target.value)}
                                 placeholder="0"
-                                className="w-20 sm:w-24 bg-transparent text-center font-black text-white text-base sm:text-lg focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                className="w-14 sm:w-24 bg-transparent text-center font-black text-white text-xs sm:text-lg focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 autoFocus
                             />
-                            <span className="text-gray-400 text-xs sm:text-sm">kcal</span>
+                            <span className="text-gray-400 text-[10px] sm:text-sm">kcal</span>
                         </div>
                     ) : (
-                        <span>
+                        <span className="truncate">
                             {isSummary ? '총 권장 ' : '권장 '}{formatNumber(targetCalories)}kcal
                         </span>
                     )}
                     {targetCalories > 0 && (
-                        <span className="text-gray-400 ml-1 text-sm sm:text-base">({caloriesRawPercent}%)</span>
+                        <span className="text-gray-400 ml-0.5 text-[11px] sm:text-base shrink-0">({caloriesRawPercent}%)</span>
                     )}
                 </div>
 
-                {/* Right: Header Action (수정 / 저장 버튼 등) */}
-                <div className="w-full sm:w-auto flex justify-center sm:justify-end shrink-0">
-                    {headerAction}
-                </div>
+                {/* Right: Header Action (수정 / 저장 버튼 등) on same line */}
+                {headerAction && (
+                    <div className="shrink-0 flex items-center">
+                        {headerAction}
+                    </div>
+                )}
             </div>
 
             {isSummary && (
-                <div className="mb-6 px-2 sm:px-8">
-                    <div className="w-full bg-[#3a3a3a] rounded-full h-2.5 mb-2 overflow-hidden">
+                <div className="mb-2 sm:mb-4 px-1 sm:px-6">
+                    <div className="w-full bg-[#3a3a3a] rounded-full h-2 sm:h-2.5 mb-1.5 overflow-hidden">
                         <div className={`h-full rounded-full transition-all duration-500 ${isOverCalories ? 'bg-red-500' : 'bg-blue-500'}`} style={{ width: `${caloriesPercent}%` }}></div>
                     </div>
                     {targetCalories > 0 && (
-                        <div className="text-center text-xs sm:text-sm font-bold mt-2">
+                        <div className="text-center text-xs sm:text-sm font-bold mt-1 whitespace-nowrap">
                             {isOverCalories ? (
                                 <span className="text-red-400 flex items-center justify-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                                     {formatNumber(Math.abs(remainingCalories))}kcal 초과
                                 </span>
                             ) : remainingCalories === 0 ? (
                                 <span className="text-green-400 flex items-center justify-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                     적정
                                 </span>
                             ) : (
                                 <span className="text-blue-400 flex items-center justify-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" /></svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" /></svg>
                                     {formatNumber(remainingCalories)}kcal 부족
                                 </span>
                             )}
@@ -394,92 +396,92 @@ const MealMacroSummary: React.FC<MealMacroSummaryProps> = ({
                 </div>
             )}
 
-            {/* Macros Grid */}
-            <div className="grid grid-cols-3 gap-4 sm:gap-6 text-center px-2 sm:px-8">
+            {/* Macros Grid - 1 line text per column */}
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-6 text-center px-0.5 sm:px-6">
                 {/* Carbs */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-semibold mb-3 text-gray-100">탄수화물</span>
-                    <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-3 overflow-hidden">
+                    <span className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-100 whitespace-nowrap">탄수화물</span>
+                    <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-1.5 sm:mb-2 overflow-hidden">
                         <div className="bg-yellow-400 h-full rounded-full transition-all duration-500" style={{ width: `${carbsPercent}%` }}></div>
                     </div>
                     {isEditing ? (
-                        <div className="flex flex-col items-center gap-1">
-                            <span className="text-xs sm:text-sm font-bold text-gray-300">
+                        <div className="flex flex-col items-center gap-0.5 sm:gap-1 w-full">
+                            <span className="text-[10px] sm:text-xs font-bold text-gray-300 whitespace-nowrap">
                                 섭취 {formatNumber(currentCarbs)}g
                             </span>
-                            <div className="flex items-center gap-1 bg-gray-900 border border-yellow-400/80 rounded-md px-1.5 py-0.5 shadow-inner">
-                                <span className="text-[10px] sm:text-xs text-yellow-300 font-semibold">권장:</span>
+                            <div className="flex items-center justify-center gap-0.5 bg-gray-900 border border-yellow-400/80 rounded px-1 py-0.5 shadow-inner w-full max-w-[85px] sm:max-w-none">
+                                <span className="text-[9px] sm:text-xs text-yellow-300 font-semibold whitespace-nowrap">권장:</span>
                                 <input
                                     type="number"
                                     value={editCarbs ?? ''}
                                     onChange={(e) => onCarbsChange?.(e.target.value)}
                                     placeholder="0"
-                                    className="w-12 sm:w-16 bg-transparent text-center font-bold text-white text-xs sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    className="w-8 sm:w-16 bg-transparent text-center font-bold text-white text-[11px] sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
-                                <span className="text-[10px] sm:text-xs text-gray-400">g</span>
+                                <span className="text-[9px] sm:text-xs text-gray-400">g</span>
                             </div>
                         </div>
                     ) : (
-                        <span className="text-xs sm:text-sm font-bold text-gray-100">
-                            {formatNumber(currentCarbs)} / {formatNumber(targetCarbs)}g <span className="text-gray-400 font-normal ml-1">({carbsRawPercent}%)</span>
+                        <span className="text-[10px] min-[380px]:text-[11px] sm:text-sm font-bold text-gray-100 whitespace-nowrap leading-tight">
+                            {formatNumber(currentCarbs)} / {formatNumber(targetCarbs)}g <span className="text-gray-400 font-normal ml-0.5">({carbsRawPercent}%)</span>
                         </span>
                     )}
                 </div>
                 {/* Protein */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-semibold mb-3 text-gray-100">단백질</span>
-                    <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-3 overflow-hidden">
+                    <span className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-100 whitespace-nowrap">단백질</span>
+                    <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-1.5 sm:mb-2 overflow-hidden">
                         <div className="bg-green-500 h-full rounded-full transition-all duration-500" style={{ width: `${proteinPercent}%` }}></div>
                     </div>
                     {isEditing ? (
-                        <div className="flex flex-col items-center gap-1">
-                            <span className="text-xs sm:text-sm font-bold text-gray-300">
+                        <div className="flex flex-col items-center gap-0.5 sm:gap-1 w-full">
+                            <span className="text-[10px] sm:text-xs font-bold text-gray-300 whitespace-nowrap">
                                 섭취 {formatNumber(currentProtein)}g
                             </span>
-                            <div className="flex items-center gap-1 bg-gray-900 border border-green-400/80 rounded-md px-1.5 py-0.5 shadow-inner">
-                                <span className="text-[10px] sm:text-xs text-green-300 font-semibold">권장:</span>
+                            <div className="flex items-center justify-center gap-0.5 bg-gray-900 border border-green-400/80 rounded px-1 py-0.5 shadow-inner w-full max-w-[85px] sm:max-w-none">
+                                <span className="text-[9px] sm:text-xs text-green-300 font-semibold whitespace-nowrap">권장:</span>
                                 <input
                                     type="number"
                                     value={editProtein ?? ''}
                                     onChange={(e) => onProteinChange?.(e.target.value)}
                                     placeholder="0"
-                                    className="w-12 sm:w-16 bg-transparent text-center font-bold text-white text-xs sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    className="w-8 sm:w-16 bg-transparent text-center font-bold text-white text-[11px] sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
-                                <span className="text-[10px] sm:text-xs text-gray-400">g</span>
+                                <span className="text-[9px] sm:text-xs text-gray-400">g</span>
                             </div>
                         </div>
                     ) : (
-                        <span className="text-xs sm:text-sm font-bold text-gray-100">
-                            {formatNumber(currentProtein)} / {formatNumber(targetProtein)}g <span className="text-gray-400 font-normal ml-1">({proteinRawPercent}%)</span>
+                        <span className="text-[10px] min-[380px]:text-[11px] sm:text-sm font-bold text-gray-100 whitespace-nowrap leading-tight">
+                            {formatNumber(currentProtein)} / {formatNumber(targetProtein)}g <span className="text-gray-400 font-normal ml-0.5">({proteinRawPercent}%)</span>
                         </span>
                     )}
                 </div>
                 {/* Fat */}
                 <div className="flex flex-col items-center">
-                    <span className="text-sm font-semibold mb-3 text-gray-100">지방</span>
-                    <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-3 overflow-hidden">
+                    <span className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-gray-100 whitespace-nowrap">지방</span>
+                    <div className="w-full bg-[#3a3a3a] rounded-full h-1.5 mb-1.5 sm:mb-2 overflow-hidden">
                         <div className="bg-red-500 h-full rounded-full transition-all duration-500" style={{ width: `${fatPercent}%` }}></div>
                     </div>
                     {isEditing ? (
-                        <div className="flex flex-col items-center gap-1">
-                            <span className="text-xs sm:text-sm font-bold text-gray-300">
+                        <div className="flex flex-col items-center gap-0.5 sm:gap-1 w-full">
+                            <span className="text-[10px] sm:text-xs font-bold text-gray-300 whitespace-nowrap">
                                 섭취 {formatNumber(currentFat)}g
                             </span>
-                            <div className="flex items-center gap-1 bg-gray-900 border border-red-400/80 rounded-md px-1.5 py-0.5 shadow-inner">
-                                <span className="text-[10px] sm:text-xs text-red-300 font-semibold">권장:</span>
+                            <div className="flex items-center justify-center gap-0.5 bg-gray-900 border border-red-400/80 rounded px-1 py-0.5 shadow-inner w-full max-w-[85px] sm:max-w-none">
+                                <span className="text-[9px] sm:text-xs text-red-300 font-semibold whitespace-nowrap">권장:</span>
                                 <input
                                     type="number"
                                     value={editFat ?? ''}
                                     onChange={(e) => onFatChange?.(e.target.value)}
                                     placeholder="0"
-                                    className="w-12 sm:w-16 bg-transparent text-center font-bold text-white text-xs sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                    className="w-8 sm:w-16 bg-transparent text-center font-bold text-white text-[11px] sm:text-sm focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
-                                <span className="text-[10px] sm:text-xs text-gray-400">g</span>
+                                <span className="text-[9px] sm:text-xs text-gray-400">g</span>
                             </div>
                         </div>
                     ) : (
-                        <span className="text-xs sm:text-sm font-bold text-gray-100">
-                            {formatNumber(currentFat)} / {formatNumber(targetFat)}g <span className="text-gray-400 font-normal ml-1">({fatRawPercent}%)</span>
+                        <span className="text-[10px] min-[380px]:text-[11px] sm:text-sm font-bold text-gray-100 whitespace-nowrap leading-tight">
+                            {formatNumber(currentFat)} / {formatNumber(targetFat)}g <span className="text-gray-400 font-normal ml-0.5">({fatRawPercent}%)</span>
                         </span>
                     )}
                 </div>
@@ -487,16 +489,16 @@ const MealMacroSummary: React.FC<MealMacroSummaryProps> = ({
 
             {/* Split Preview Banner when editing */}
             {isEditing && (
-                <div className="mt-5 p-3 bg-blue-900/30 border border-blue-700/60 rounded-xl text-center">
-                    <p className="text-xs sm:text-sm text-blue-200 font-medium flex flex-wrap items-center justify-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="mt-2.5 sm:mt-4 p-2 sm:p-3 bg-blue-900/30 border border-blue-700/60 rounded-xl text-center">
+                    <p className="text-[11px] sm:text-sm text-blue-200 font-medium flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>식사 1, 2, 3 권장량(각 1/3 균등 배분):</span>
-                        <span className="text-white font-bold ml-1">칼로리 {formatNumber(Math.round(((Number(editCalories) || 0) / 3) * 10) / 10)}kcal</span> | 
-                        <span className="text-yellow-300 font-bold ml-1">탄수화물 {formatNumber(Math.round(((Number(editCarbs) || 0) / 3) * 10) / 10)}g</span> | 
-                        <span className="text-green-300 font-bold ml-1">단백질 {formatNumber(Math.round(((Number(editProtein) || 0) / 3) * 10) / 10)}g</span> | 
-                        <span className="text-red-300 font-bold ml-1">지방 {formatNumber(Math.round(((Number(editFat) || 0) / 3) * 10) / 10)}g</span>
+                        <span className="whitespace-nowrap">식사 1, 2, 3 각 권장량:</span>
+                        <span className="text-white font-bold ml-0.5 whitespace-nowrap">칼 {formatNumber(Math.round(((Number(editCalories) || 0) / 3) * 10) / 10)}</span> | 
+                        <span className="text-yellow-300 font-bold ml-0.5 whitespace-nowrap">탄 {formatNumber(Math.round(((Number(editCarbs) || 0) / 3) * 10) / 10)}g</span> | 
+                        <span className="text-green-300 font-bold ml-0.5 whitespace-nowrap">단 {formatNumber(Math.round(((Number(editProtein) || 0) / 3) * 10) / 10)}g</span> | 
+                        <span className="text-red-300 font-bold ml-0.5 whitespace-nowrap">지 {formatNumber(Math.round(((Number(editFat) || 0) / 3) * 10) / 10)}g</span>
                     </p>
                 </div>
             )}
@@ -538,35 +540,35 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
     };
 
     return (
-        <div className="bg-gray-800 p-4 rounded-xl shadow-lg border border-gray-700 mb-6">
-            <div className="flex justify-between items-center cursor-pointer mb-4" onClick={onToggleExpand}>
-                <div className="flex items-center gap-3">
-                    <h4 className="text-lg sm:text-xl font-bold text-blue-400">{displayName}</h4>
-                    <div className="flex items-center gap-2">
+        <div className="bg-gray-800 p-3 sm:p-4 rounded-xl shadow-lg border border-gray-700 mb-3 sm:mb-5">
+            <div className="flex justify-between items-center cursor-pointer mb-2 sm:mb-3" onClick={onToggleExpand}>
+                <div className="flex items-center gap-2 sm:gap-3">
+                    <h4 className="text-base sm:text-xl font-bold text-blue-400 whitespace-nowrap">{displayName}</h4>
+                    <div className="flex items-center gap-1.5">
                         <input
                             type="time"
                             value={userMeal.time || ''}
                             onChange={(e) => onUserMealChange(mealIndex, 'time', e.target.value)}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-gray-700 border border-gray-600 rounded-md px-2 py-1 text-sm text-green-400 focus:ring-green-500 focus:border-green-500"
+                            className="bg-gray-700 border border-gray-600 rounded-md px-1.5 py-0.5 text-xs sm:text-sm text-green-400 focus:ring-green-500 focus:border-green-500"
                             title="실제 섭취 시간"
                         />
                     </div>
                 </div>
                  <button 
-                    className="p-2 rounded-full hover:bg-gray-700 transition-colors"
+                    className="p-1 sm:p-2 rounded-full hover:bg-gray-700 transition-colors"
                     aria-expanded={isExpanded}
                     aria-controls={contentId}
                     aria-label={isExpanded ? `${displayName} 항목 접기` : `${displayName} 항목 펼치기`}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 sm:h-6 sm:w-6 transform transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
             </div>
 
             {/* Meal Summary Progress Bars - Always visible */}
-            <div className="mb-4">
+            <div className="mb-2 sm:mb-3">
                 <MealMacroSummary current={userMeal} target={adminMeal} />
             </div>
 
@@ -574,22 +576,22 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
               id={contentId}
               className={`transition-all duration-500 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}
             >
-                {/* Combined Target and Actual Intake - Grid Layout for Mobile */}
-                <div className="bg-gray-900/80 rounded-lg border border-gray-700 p-3 sm:p-4 mb-6">
+                {/* Combined Target and Actual Intake - Grid Layout for Mobile (1-line labels) */}
+                <div className="bg-gray-900/80 rounded-lg border border-gray-700 p-2 sm:p-3 mb-2.5 sm:mb-4">
                     {/* Header */}
-                    <div className="grid grid-cols-[60px_1fr_1fr] sm:grid-cols-[80px_1fr_1fr] gap-2 sm:gap-4 mb-3 pb-2 border-b border-gray-700 text-xs sm:text-sm font-semibold text-center items-center">
-                        <div className="text-left text-gray-400">구분</div>
-                        <div className="text-blue-300">권장 목표</div>
-                        <div className="text-green-400">실제 섭취</div>
+                    <div className="grid grid-cols-[75px_1fr_1fr] sm:grid-cols-[90px_1fr_1fr] gap-1.5 sm:gap-3 mb-1.5 sm:mb-2 pb-1.5 border-b border-gray-700 text-xs sm:text-sm font-semibold text-center items-center">
+                        <div className="text-left text-gray-400 whitespace-nowrap pl-1">구분</div>
+                        <div className="text-blue-300 whitespace-nowrap">권장 목표</div>
+                        <div className="text-green-400 whitespace-nowrap">실제 섭취</div>
                     </div>
 
                     {/* Calories */}
-                    <div className="grid grid-cols-[60px_1fr_1fr] sm:grid-cols-[80px_1fr_1fr] gap-2 sm:gap-4 items-center mb-3">
-                        <div className="text-xs sm:text-sm font-medium text-gray-300 leading-tight">칼로리<br className="sm:hidden"/><span className="text-[10px] sm:text-xs text-gray-500">(kcal)</span></div>
+                    <div className="grid grid-cols-[75px_1fr_1fr] sm:grid-cols-[90px_1fr_1fr] gap-1.5 sm:gap-3 items-center mb-1.5 sm:mb-2">
+                        <div className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap pl-1">칼로리(kcal)</div>
                         <div className="flex items-center justify-center">
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMealChange(mealIndex, 'calories', String(Math.max(0, (adminMeal.calories || 0) - 10)))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMealChange(mealIndex, 'calories', String(Math.max(0, (adminMeal.calories || 0) - 10)))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
                                 </button>
                             )}
                             <input 
@@ -598,11 +600,11 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
                                 onChange={(e) => onAdminMealChange(mealIndex, 'calories', e.target.value)}
                                 placeholder="0"
                                 disabled={!isAdmin}
-                                className={`w-full min-w-[30px] text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}
+                                className={`w-full min-w-[28px] text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}
                             />
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMealChange(mealIndex, 'calories', String((adminMeal.calories || 0) + 10))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMealChange(mealIndex, 'calories', String((adminMeal.calories || 0) + 10))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                                 </button>
                             )}
                         </div>
@@ -613,76 +615,76 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
                                 onChange={(e) => onUserMealChange(mealIndex, 'calories', e.target.value)}
                                 placeholder="0"
                                 disabled={!isAdmin}
-                                className={`w-full text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}
+                                className={`w-full text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}
                             />
                         </div>
                     </div>
 
                     {/* Carbs */}
-                    <div className="grid grid-cols-[60px_1fr_1fr] sm:grid-cols-[80px_1fr_1fr] gap-2 sm:gap-4 items-center mb-3">
-                        <div className="text-xs sm:text-sm font-medium text-yellow-400/80 leading-tight">탄수화물<br className="sm:hidden"/><span className="text-[10px] sm:text-xs text-yellow-600/80">(g)</span></div>
+                    <div className="grid grid-cols-[75px_1fr_1fr] sm:grid-cols-[90px_1fr_1fr] gap-1.5 sm:gap-3 items-center mb-1.5 sm:mb-2">
+                        <div className="text-xs sm:text-sm font-medium text-yellow-400/90 whitespace-nowrap pl-1">탄수화물(g)</div>
                         <div className="flex items-center justify-center">
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'carbs', String(Math.max(0, (adminMeal.macros.carbs || 0) - 1)))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'carbs', String(Math.max(0, (adminMeal.macros.carbs || 0) - 1)))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
                                 </button>
                             )}
-                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(adminMeal.macros.carbs) : formatNumber(adminMeal.macros.carbs)} onChange={e => onAdminMacroChange(mealIndex, 'carbs', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full min-w-[30px] text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}/>
+                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(adminMeal.macros.carbs) : formatNumber(adminMeal.macros.carbs)} onChange={e => onAdminMacroChange(mealIndex, 'carbs', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full min-w-[28px] text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}/>
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'carbs', String((adminMeal.macros.carbs || 0) + 1))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'carbs', String((adminMeal.macros.carbs || 0) + 1))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                                 </button>
                             )}
                         </div>
                         <div>
-                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(userMeal.macros.carbs) : formatNumber(userMeal.macros.carbs)} onChange={e => onUserMacroChange(mealIndex, 'carbs', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}/>
+                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(userMeal.macros.carbs) : formatNumber(userMeal.macros.carbs)} onChange={e => onUserMacroChange(mealIndex, 'carbs', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}/>
                         </div>
                     </div>
 
                     {/* Protein */}
-                    <div className="grid grid-cols-[60px_1fr_1fr] sm:grid-cols-[80px_1fr_1fr] gap-2 sm:gap-4 items-center mb-3">
-                        <div className="text-xs sm:text-sm font-medium text-green-400/80 leading-tight">단백질<br className="sm:hidden"/><span className="text-[10px] sm:text-xs text-green-600/80">(g)</span></div>
+                    <div className="grid grid-cols-[75px_1fr_1fr] sm:grid-cols-[90px_1fr_1fr] gap-1.5 sm:gap-3 items-center mb-1.5 sm:mb-2">
+                        <div className="text-xs sm:text-sm font-medium text-green-400/90 whitespace-nowrap pl-1">단백질(g)</div>
                         <div className="flex items-center justify-center">
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'protein', String(Math.max(0, (adminMeal.macros.protein || 0) - 1)))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'protein', String(Math.max(0, (adminMeal.macros.protein || 0) - 1)))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
                                 </button>
                             )}
-                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(adminMeal.macros.protein) : formatNumber(adminMeal.macros.protein)} onChange={e => onAdminMacroChange(mealIndex, 'protein', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full min-w-[30px] text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}/>
+                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(adminMeal.macros.protein) : formatNumber(adminMeal.macros.protein)} onChange={e => onAdminMacroChange(mealIndex, 'protein', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full min-w-[28px] text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}/>
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'protein', String((adminMeal.macros.protein || 0) + 1))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'protein', String((adminMeal.macros.protein || 0) + 1))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                                 </button>
                             )}
                         </div>
                         <div>
-                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(userMeal.macros.protein) : formatNumber(userMeal.macros.protein)} onChange={e => onUserMacroChange(mealIndex, 'protein', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}/>
+                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(userMeal.macros.protein) : formatNumber(userMeal.macros.protein)} onChange={e => onUserMacroChange(mealIndex, 'protein', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}/>
                         </div>
                     </div>
 
                     {/* Fat */}
-                    <div className="grid grid-cols-[60px_1fr_1fr] sm:grid-cols-[80px_1fr_1fr] gap-2 sm:gap-4 items-center">
-                        <div className="text-xs sm:text-sm font-medium text-red-400/80 leading-tight">지방<br className="sm:hidden"/><span className="text-[10px] sm:text-xs text-red-600/80">(g)</span></div>
+                    <div className="grid grid-cols-[75px_1fr_1fr] sm:grid-cols-[90px_1fr_1fr] gap-1.5 sm:gap-3 items-center">
+                        <div className="text-xs sm:text-sm font-medium text-red-400/90 whitespace-nowrap pl-1">지방(g)</div>
                         <div className="flex items-center justify-center">
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'fat', String(Math.max(0, (adminMeal.macros.fat || 0) - 1)))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'fat', String(Math.max(0, (adminMeal.macros.fat || 0) - 1)))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4"></path></svg>
                                 </button>
                             )}
-                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(adminMeal.macros.fat) : formatNumber(adminMeal.macros.fat)} onChange={e => onAdminMacroChange(mealIndex, 'fat', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full min-w-[30px] text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}/>
+                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(adminMeal.macros.fat) : formatNumber(adminMeal.macros.fat)} onChange={e => onAdminMacroChange(mealIndex, 'fat', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full min-w-[28px] text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-blue-500 hover:bg-gray-800'}`}/>
                             {isAdmin && (
-                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'fat', String((adminMeal.macros.fat || 0) + 1))} className="text-gray-400 hover:text-blue-400 p-1 shrink-0">
-                                    <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                <button type="button" onClick={() => onAdminMacroChange(mealIndex, 'fat', String((adminMeal.macros.fat || 0) + 1))} className="text-gray-400 hover:text-blue-400 p-0.5 sm:p-1 shrink-0">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
                                 </button>
                             )}
                         </div>
                         <div>
-                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(userMeal.macros.fat) : formatNumber(userMeal.macros.fat)} onChange={e => onUserMacroChange(mealIndex, 'fat', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full text-center bg-transparent border-b border-gray-600 p-1 text-sm sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}/>
+                            <input type={isAdmin ? "number" : "text"} value={isAdmin ? formatInputNumber(userMeal.macros.fat) : formatNumber(userMeal.macros.fat)} onChange={e => onUserMacroChange(mealIndex, 'fat', e.target.value)} placeholder="0" disabled={!isAdmin} className={`w-full text-center bg-transparent border-b border-gray-600 py-0.5 px-1 text-xs sm:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${!isAdmin ? 'cursor-default' : 'focus:border-green-500 hover:bg-gray-800'}`}/>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex flex-col lg:flex-row gap-4">
+                <div className="flex flex-col lg:flex-row gap-2.5 sm:gap-4">
                     {/* Admin Menu Input */}
                     <MenuTable 
                         items={adminMeal.menu || []} 
@@ -698,7 +700,7 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
                     />
 
                     {/* User Menu Input (Separated) */}
-                    <div className="flex-1 flex flex-col gap-3">
+                    <div className="flex-1 flex flex-col gap-2.5 sm:gap-3">
                         <MenuTable 
                             items={userMeal.menu || []} 
                             onChange={(newMenu) => onUserMenuChange(mealIndex, newMenu)} 
@@ -714,21 +716,21 @@ const EditableMealCard: React.FC<EditableMealCardProps> = ({
                             onAddFrequentFoods={onAddFrequentFoods}
                             onOpenFrequentFoodsList={onOpenFrequentFoodsList}
                         />
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-1.5 sm:gap-2">
                             <button 
                                 onClick={() => onClearUserMeal(mealIndex)}
-                                className="bg-red-600/20 hover:bg-red-600 border border-red-500 text-red-50 hover:text-white font-bold py-1.5 px-4 rounded-lg transition-colors text-sm flex items-center gap-2"
+                                className="bg-red-600/20 hover:bg-red-600 border border-red-500 text-red-50 hover:text-white font-bold py-1 sm:py-1.5 px-2.5 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm flex items-center gap-1 sm:gap-2 whitespace-nowrap"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                                 섭취 내용 삭제
                             </button>
                             <button 
                                 onClick={() => onSaveMeal && onSaveMeal(displayName, userDiet)}
-                                className="bg-green-600 hover:bg-green-700 text-white font-bold py-1.5 px-4 rounded-lg transition-colors text-sm flex items-center gap-2"
+                                className="bg-green-600 hover:bg-green-700 text-white font-bold py-1 sm:py-1.5 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm flex items-center gap-1 sm:gap-2 whitespace-nowrap"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
                                 섭취 내용 저장
@@ -1322,45 +1324,43 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
     };
 
     return (
-        <div className="space-y-6">
-            <div className="bg-gray-800 p-5 sm:p-6 rounded-xl shadow-lg border border-gray-700">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <div className="flex flex-wrap items-center gap-3">
-                        <h3 className="text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="space-y-3 sm:space-y-6">
+            <div className="bg-gray-800 p-3 sm:p-6 rounded-xl shadow-lg border border-gray-700">
+                <div className="flex flex-wrap justify-between items-center mb-2.5 sm:mb-5 gap-2">
+                    <div className="flex items-center gap-2">
+                        <h3 className="text-base min-[380px]:text-lg sm:text-2xl font-bold text-white flex items-center gap-1.5 whitespace-nowrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                             오늘 식단 요약
                         </h3>
                     </div>
                     
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 self-end sm:self-auto">
-                        <div className="flex flex-col gap-2">
-                            <button
-                                onClick={() => setIsExportModalOpen(true)}
-                                className="bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold px-3.5 py-1.5 sm:py-2 rounded-lg shadow-md transition-colors flex items-center justify-center gap-2 shrink-0"
-                                title="기간 및 조건을 선택하여 데이터 내보내기"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                선택 데이터 내보내기
-                            </button>
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
+                        <button
+                            onClick={() => setIsExportModalOpen(true)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white text-[11px] sm:text-sm font-semibold px-2.5 py-1 sm:px-3.5 sm:py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1 shrink-0 whitespace-nowrap"
+                            title="기간 및 조건을 선택하여 데이터 내보내기"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            선택 데이터 내보내기
+                        </button>
 
-                            <button
-                                onClick={handleDownloadCSV}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold px-3.5 py-1.5 sm:py-2 rounded-lg shadow-md transition-colors flex items-center justify-center gap-2 shrink-0"
-                                title="현재 날짜 식단 데이터를 CSV로 다운로드"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                오늘 데이터 내보내기
-                            </button>
-                        </div>
+                        <button
+                            onClick={handleDownloadCSV}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] sm:text-sm font-semibold px-2.5 py-1 sm:px-3.5 sm:py-2 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-1 shrink-0 whitespace-nowrap"
+                            title="현재 날짜 식단 데이터를 CSV로 다운로드"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            오늘 데이터 내보내기
+                        </button>
 
                         {userRole === 'admin' && setAutoApplyRecentDiet && (
-                            <label className="flex items-center cursor-pointer bg-gray-900/50 px-4 py-2 rounded-lg border border-gray-700 hover:bg-gray-700/50 transition-colors h-full">
+                            <label className="flex items-center cursor-pointer bg-gray-900/50 px-2.5 py-1 sm:px-4 sm:py-2 rounded-lg border border-gray-700 hover:bg-gray-700/50 transition-colors shrink-0">
                                 <div className="relative">
                                     <input 
                                         type="checkbox" 
@@ -1368,11 +1368,11 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                                         checked={autoApplyRecentDiet} 
                                         onChange={(e) => setAutoApplyRecentDiet(e.target.checked)} 
                                     />
-                                    <div className={`block w-10 h-6 rounded-full transition-colors ${autoApplyRecentDiet ? 'bg-blue-500' : 'bg-gray-600'}`}></div>
-                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${autoApplyRecentDiet ? 'transform translate-x-4' : ''}`}></div>
+                                    <div className={`block w-8 sm:w-10 h-5 sm:h-6 rounded-full transition-colors ${autoApplyRecentDiet ? 'bg-blue-500' : 'bg-gray-600'}`}></div>
+                                    <div className={`dot absolute left-0.5 top-0.5 bg-white w-4 sm:w-5 h-4 sm:h-5 rounded-full transition-transform ${autoApplyRecentDiet ? 'transform translate-x-3 sm:translate-x-4' : ''}`}></div>
                                 </div>
-                                <div className="ml-3 text-sm font-medium text-gray-300">
-                                    최근 권장 목표 자동 적용
+                                <div className="ml-2 text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">
+                                    최근 목표 자동 적용
                                 </div>
                             </label>
                         )}
@@ -1380,10 +1380,10 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                 </div>
 
                 {/* Announcement Section */}
-                <div className="mb-6 bg-blue-900/20 border border-blue-800/50 rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-sm font-bold text-blue-300 flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="mb-2.5 sm:mb-4 bg-blue-900/20 border border-blue-800/50 rounded-lg p-2.5 sm:p-3.5">
+                    <div className="flex justify-between items-center mb-1.5">
+                        <h4 className="text-xs sm:text-sm font-bold text-blue-300 flex items-center gap-1.5 whitespace-nowrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
                             </svg>
                             관리자 공지사항
@@ -1391,7 +1391,7 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                         {userRole === 'admin' && !isEditingAnnouncement && (
                             <button 
                                 onClick={() => setIsEditingAnnouncement(true)}
-                                className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded transition-colors"
+                                className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-2 py-0.5 rounded transition-colors whitespace-nowrap"
                             >
                                 수정
                             </button>
@@ -1404,34 +1404,34 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                                 value={tempAnnouncement}
                                 onChange={(e) => setTempAnnouncement(e.target.value)}
                                 placeholder="선수들에게 전달할 공지사항을 입력하세요."
-                                className="w-full bg-gray-800 border border-gray-600 rounded-md p-2 text-white text-sm focus:ring-blue-500 focus:border-blue-500 min-h-[80px]"
+                                className="w-full bg-gray-800 border border-gray-600 rounded-md p-2 text-white text-xs sm:text-sm focus:ring-blue-500 focus:border-blue-500 min-h-[60px]"
                             />
-                            <div className="flex justify-end gap-2">
+                            <div className="flex justify-end gap-1.5">
                                 <button 
                                     onClick={() => {
                                         setTempAnnouncement(announcement);
                                         setIsEditingAnnouncement(false);
                                     }}
-                                    className="text-xs bg-gray-600 hover:bg-gray-500 text-white px-3 py-1.5 rounded transition-colors"
+                                    className="text-xs bg-gray-600 hover:bg-gray-500 text-white px-2.5 py-1 rounded transition-colors whitespace-nowrap"
                                 >
                                     취소
                                 </button>
                                 <button 
                                     onClick={handleAnnouncementSave}
-                                    className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded transition-colors"
+                                    className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded transition-colors whitespace-nowrap"
                                 >
                                     저장
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-sm text-gray-200 whitespace-pre-wrap">
+                        <div className="text-xs sm:text-sm text-gray-200 whitespace-pre-wrap">
                             {announcement ? announcement : <span className="text-gray-500 italic">등록된 공지사항이 없습니다.</span>}
                         </div>
                     )}
                 </div>
 
-                {noAdminDiet && <p className="text-yellow-400 text-sm mb-4 bg-yellow-400/10 p-3 rounded-md border border-yellow-400/20">관리자가 입력한 권장 식단 정보가 없습니다.</p>}
+                {noAdminDiet && <p className="text-yellow-400 text-xs sm:text-sm mb-2.5 bg-yellow-400/10 p-2 sm:p-3 rounded-md border border-yellow-400/20">관리자가 입력한 권장 식단 정보가 없습니다.</p>}
                 
                 <MealMacroSummary 
                     current={{ calories: userDiet.totalCalories, macros: userDiet.totalMacros }} 
@@ -1451,29 +1451,29 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                             <button
                                 type="button"
                                 onClick={handleStartEditTargets}
-                                className="bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold px-3 py-1.5 rounded-lg shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                                className="bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-semibold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap"
                                 title="총 권장 칼로리, 탄수화물, 단백질, 지방 수정"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                                 수정
                             </button>
                         ) : (
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 sm:gap-2">
                                 <button
                                     type="button"
                                     onClick={handleCancelEditTargets}
-                                    className="bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                                    className="bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm font-medium px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg transition-colors cursor-pointer whitespace-nowrap"
                                 >
                                     취소
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleRequestSaveTargets}
-                                    className="bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm font-bold px-3.5 py-1.5 rounded-lg shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer"
+                                    className="bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm font-bold px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer whitespace-nowrap"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                     </svg>
                                     저장
@@ -1484,7 +1484,7 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
                 />
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-3 sm:space-y-5">
                 {adminDiet.meals.map((meal, index) => (
                     <EditableMealCard 
                         key={index} 
