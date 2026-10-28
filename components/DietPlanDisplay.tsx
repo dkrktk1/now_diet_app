@@ -1528,7 +1528,7 @@ const DietPlanDisplay: React.FC<DietPlanDisplayProps> = ({
             {showSaveButton && (
                 <div className="mt-8 flex justify-center">
                     <button
-                        onClick={onSave}
+                        onClick={() => onSave && onSave()}
                         className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 text-lg rounded-xl shadow-lg transition-colors flex items-center gap-2"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

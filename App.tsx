@@ -88,6 +88,7 @@ const App: React.FC = () => {
     const [userRole, setUserRole] = useState<UserRole | null>(() => localStorage.getItem('userRole') as UserRole | null);
     const [allPlayers, setAllPlayers] = useState<Player[]>([]);
     const [selectedPlayerId, setSelectedPlayerId] = useState<string | null>(null);
+    const [loadedUserId, setLoadedUserId] = useState<string | null>(null);
     const [authView, setAuthView] = useState<'login' | 'signup'>('login');
     const [notification, setNotification] = useState<string | null>(null);
     const [announcement, setAnnouncement] = useState<string>('');
@@ -123,6 +124,7 @@ const App: React.FC = () => {
 
     const loadDataForUser = useCallback(async (targetUserId: string) => {
         setIsLoading(true);
+        setLoadedUserId(null);
         try {
             const [loadedProfile, loadedGoal, loadedAdminDiets, loadedUserDiets, loadedWeightHistory, loadedAnnouncement] = await Promise.all([
                 loadPlayerProfile(targetUserId),
@@ -138,6 +140,7 @@ const App: React.FC = () => {
             setUserDiets(loadedUserDiets || {});
             setWeightHistory(loadedWeightHistory || []);
             setAnnouncement(loadedAnnouncement || '');
+            setLoadedUserId(targetUserId);
         } catch (error) {
             console.error(`Failed to load data for user ${targetUserId}:`, error);
         } finally {
@@ -179,7 +182,7 @@ const App: React.FC = () => {
     useEffect(() => {
         if (isLoading || !userId) return;
         const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
-        if (!idToSaveFor) return;
+        if (!idToSaveFor || idToSaveFor !== loadedUserId) return;
         savePlayerProfile(idToSaveFor, profile);
         saveDietGoal(idToSaveFor, goal);
         
@@ -189,16 +192,16 @@ const App: React.FC = () => {
                 p.id === selectedPlayerId ? { ...p, name: profile.name } : p
             ));
         }
-    }, [profile, goal, isLoading, userId, userRole, selectedPlayerId, allPlayers]);
+    }, [profile, goal, isLoading, userId, userRole, selectedPlayerId, loadedUserId, allPlayers]);
 
 
     
     useEffect(() => {
         if (isLoading || !userId) return;
         const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
-        if (!idToSaveFor) return;
+        if (!idToSaveFor || idToSaveFor !== loadedUserId) return;
         saveWeightHistory(idToSaveFor, weightHistory);
-    }, [weightHistory, isLoading, userId, userRole, selectedPlayerId]);
+    }, [weightHistory, isLoading, userId, userRole, selectedPlayerId, loadedUserId]);
 
 
     useEffect(() => {
@@ -261,10 +264,12 @@ const App: React.FC = () => {
         localStorage.removeItem('userRole');
         setUserId(null);
         setUserRole(null);
+        setLoadedUserId(null);
         setAuthView('login');
         setProfile(initialProfile);
         setGoal(initialGoal);
         setAdminDiets({});
+        setUserDiets({});
         setWeightHistory([]);
         setAllPlayers([]);
         setSelectedPlayerId(null);
@@ -381,14 +386,29 @@ const App: React.FC = () => {
     const dateStringForWeight = formatDateDots(selectedDate);
     const weightForDate = weightHistory.find(entry => entry.date === dateStringForWeight) || null;
 
+    const isValidDailyDiet = (val: unknown): val is DailyDiet => {
+        return Boolean(
+            val &&
+            typeof val === 'object' &&
+            'meals' in val &&
+            Array.isArray((val as DailyDiet).meals) &&
+            'totalCalories' in val &&
+            'totalMacros' in val
+        );
+    };
+
     const handleSaveAdminDiet = async (dietToSave?: DailyDiet) => {
         const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
         if (!idToSaveFor) return;
         const dateKey = formatDate(selectedDate);
-        const diet = dietToSave || currentAdminDiet;
+        const diet = isValidDailyDiet(dietToSave) ? dietToSave : currentAdminDiet;
         setAdminDiets(prev => ({ ...prev, [dateKey]: diet }));
+        setUserDiets(prev => ({ ...prev, [dateKey]: currentUserDiet }));
         try {
-            await saveSingleAdminDiet(idToSaveFor, dateKey, diet);
+            await Promise.all([
+                saveSingleAdminDiet(idToSaveFor, dateKey, diet),
+                saveSingleUserDiet(idToSaveFor, dateKey, currentUserDiet),
+            ]);
             showNotification("저장이 완료되었습니다.");
         } catch (error) {
             console.error("Failed to save admin diet:", error);
@@ -400,7 +420,7 @@ const App: React.FC = () => {
         const idToSaveFor = userRole === 'admin' ? selectedPlayerId : userId;
         if (!idToSaveFor) return;
         const dateKey = formatDate(selectedDate);
-        const diet = dietToSave || currentUserDiet;
+        const diet = isValidDailyDiet(dietToSave) ? dietToSave : currentUserDiet;
         setUserDiets(prev => ({ ...prev, [dateKey]: diet }));
         try {
             await saveSingleUserDiet(idToSaveFor, dateKey, diet);
