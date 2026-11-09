@@ -18,6 +18,7 @@ import {
     saveAdminDiets, loadAdminDiets,
     saveUserDiets, loadUserDiets,
     saveSingleAdminDiet, saveSingleUserDiet,
+    subscribeAdminDiets, subscribeUserDiets,
     saveWeightHistory, loadWeightHistory,
     loadAllUsers,
     saveUserPassword, loadUserPassword,
@@ -167,15 +168,33 @@ const App: React.FC = () => {
     }, [userRole]);
 
 
-    // Load data based on role and selection
+    // Load data and subscribe to real-time diets based on role and selection
     useEffect(() => {
-        if (userRole === 'player' && userId) {
-            loadDataForUser(userId);
-        } else if (userRole === 'admin' && selectedPlayerId) {
-            loadDataForUser(selectedPlayerId);
-        } else if (!userId) {
+        const targetUserId = userRole === 'player' ? userId : userRole === 'admin' ? selectedPlayerId : null;
+
+        if (!userId) {
             setIsLoading(false);
+            return;
         }
+
+        if (!targetUserId) {
+            return;
+        }
+
+        loadDataForUser(targetUserId);
+
+        const unsubscribeAdminDiets = subscribeAdminDiets(targetUserId, (diets) => {
+            setAdminDiets(diets || {});
+        });
+
+        const unsubscribeUserDiets = subscribeUserDiets(targetUserId, (diets) => {
+            setUserDiets(diets || {});
+        });
+
+        return () => {
+            unsubscribeAdminDiets();
+            unsubscribeUserDiets();
+        };
     }, [userId, userRole, selectedPlayerId, loadDataForUser]);
 
     // Data Saving Logic
@@ -403,12 +422,8 @@ const App: React.FC = () => {
         const dateKey = formatDate(selectedDate);
         const diet = isValidDailyDiet(dietToSave) ? dietToSave : currentAdminDiet;
         setAdminDiets(prev => ({ ...prev, [dateKey]: diet }));
-        setUserDiets(prev => ({ ...prev, [dateKey]: currentUserDiet }));
         try {
-            await Promise.all([
-                saveSingleAdminDiet(idToSaveFor, dateKey, diet),
-                saveSingleUserDiet(idToSaveFor, dateKey, currentUserDiet),
-            ]);
+            await saveSingleAdminDiet(idToSaveFor, dateKey, diet);
             showNotification("저장이 완료되었습니다.");
         } catch (error) {
             console.error("Failed to save admin diet:", error);

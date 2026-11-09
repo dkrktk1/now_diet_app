@@ -104,11 +104,13 @@ export const saveAdminDiets = async (userId: string, diets: { [key: string]: Dai
 };
 
 export const saveSingleUserDiet = async (userId: string, dateKey: string, diet: DailyDiet) => {
-    await db.ref(`users/${userId}/userDiets/${dateKey}`).set(diet);
+    const sanitizedDiet = JSON.parse(JSON.stringify(diet));
+    await db.ref(`users/${userId}/userDiets/${dateKey}`).set(sanitizedDiet);
 };
 
 export const saveSingleAdminDiet = async (userId: string, dateKey: string, diet: DailyDiet) => {
-    await db.ref(`users/${userId}/adminDiets/${dateKey}`).set(diet);
+    const sanitizedDiet = JSON.parse(JSON.stringify(diet));
+    await db.ref(`users/${userId}/adminDiets/${dateKey}`).set(sanitizedDiet);
 };
 
 export const loadUserDiets = (userId: string): Promise<{ [key: string]: DailyDiet } | null> => {
@@ -117,6 +119,34 @@ export const loadUserDiets = (userId: string): Promise<{ [key: string]: DailyDie
 
 export const loadAdminDiets = (userId: string): Promise<{ [key: string]: DailyDiet } | null> => {
     return getData(`users/${userId}/adminDiets`);
+};
+
+export const subscribeUserDiets = (
+    userId: string,
+    callback: (diets: { [key: string]: DailyDiet }) => void
+): (() => void) => {
+    const ref = db.ref(`users/${userId}/userDiets`);
+    const listener = (snapshot: firebase.database.DataSnapshot) => {
+        callback(snapshot.exists() ? snapshot.val() : {});
+    };
+    ref.on('value', listener);
+    return () => {
+        ref.off('value', listener);
+    };
+};
+
+export const subscribeAdminDiets = (
+    userId: string,
+    callback: (diets: { [key: string]: DailyDiet }) => void
+): (() => void) => {
+    const ref = db.ref(`users/${userId}/adminDiets`);
+    const listener = (snapshot: firebase.database.DataSnapshot) => {
+        callback(snapshot.exists() ? snapshot.val() : {});
+    };
+    ref.on('value', listener);
+    return () => {
+        ref.off('value', listener);
+    };
 };
 
 
